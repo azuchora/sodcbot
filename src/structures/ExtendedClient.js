@@ -9,7 +9,9 @@ module.exports = class extends Client {
         interactionCommands: new Collection(),
         components: {
 
-        }
+        },
+        trackedServers: new Collection(),
+        instances: new Collection(),
     };
     applicationCommandsArray = [];
 
