@@ -11,7 +11,6 @@ module.exports = class extends Client {
 
         },
         trackedServers: new Collection(),
-        instances: new Collection(),
     };
     applicationCommandsArray = [];
 

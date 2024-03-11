@@ -15,6 +15,7 @@ module.exports = async (client) => {
         await rest.put(Routes.applicationCommands(config.DISCORD_CLIENT_ID), {
             body: client.applicationCommandsArray
         })
+        console.log('Succesfully registered slash commands.')
     } catch (e) {
         console.log('Unable to register slash commands');
     }

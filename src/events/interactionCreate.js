@@ -1,5 +1,5 @@
 const { Events } = require('discord.js');
-const ExtendedClient = require('../class/ExtendedClient');
+const ExtendedClient = require('../structures/ExtendedClient');
 
 /**
  * 
@@ -11,7 +11,7 @@ module.exports = {
 	async execute(client, interaction){
 		if (!interaction.isChatInputCommand()) return;
 
-		const command = interaction.client.collection.interactioncommands.get(interaction.commandName);
+		const command = client.collection.interactionCommands.get(interaction.commandName);
 
 		if (!command){
 			console.error(`No command matching ${interaction.commandName} was found.`);
