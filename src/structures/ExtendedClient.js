@@ -6,12 +6,12 @@ const deploy = require("../handlers/deploy");
 
 module.exports = class extends Client {
     collection = {
-        interactioncommands: new Collection(),
+        interactionCommands: new Collection(),
         components: {
 
         }
     };
-    applicationcommandsArray = [];
+    applicationCommandsArray = [];
 
     constructor() {
         super({
