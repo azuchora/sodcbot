@@ -3,6 +3,7 @@ const config = require('../config');
 const commands = require("../handlers/commands");
 const events = require("../handlers/events");
 const deploy = require("../handlers/deploy");
+const mongo = require('../handlers/mongo');
 
 module.exports = class extends Client {
     collection = {
@@ -24,7 +25,7 @@ module.exports = class extends Client {
     start = async () => {
         commands(this);
         events(this);
-
+        mongo();
         await this.login(config.DISCORD_TOKEN);
         deploy(this);
     };
