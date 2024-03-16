@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const ExtendedClient = require('../structures/ExtendedClient');
+const { log } = require('../util/logger');
 
 /**
  * 
@@ -23,9 +24,9 @@ module.exports = (client) => {
             if ('data' in command && 'execute' in command){
                 client.collection.interactionCommands.set(command.data.name, command);
                 client.applicationCommandsArray.push(command.data);
-                console.log(`Loaded command ${command.data.name}`);
+                log(`Loaded command ${command.data.name}`, 'done');
             } else {
-                console.log(`Failed to load ${filePath}`);
+                log(`Failed to load ${filePath}`, 'warn');
             }
         }
     }

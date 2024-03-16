@@ -1,6 +1,6 @@
 const { Events } = require('discord.js');
 const ExtendedClient = require('../structures/ExtendedClient');
-
+const { log } = require('../util/logger');
 
 module.exports = {
 	name: Events.ClientReady,
@@ -10,6 +10,6 @@ module.exports = {
 	 * @param {ExtendedClient} client
 	 */
 	execute(client){
-		console.log(`Ready! Logged in as ${client.user.tag}`);
+		log(`Logged in as ${client.user.tag}`, 'done');
 	},
 };

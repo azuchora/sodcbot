@@ -1,5 +1,6 @@
 const { Events } = require('discord.js');
 const ExtendedClient = require('../structures/ExtendedClient');
+const { log } = require('../util/logger');
 
 /**
  * 
@@ -14,7 +15,7 @@ module.exports = {
 		const command = client.collection.interactionCommands.get(interaction.commandName);
 
 		if (!command){
-			console.error(`No command matching ${interaction.commandName} was found.`);
+			log(`No command matching ${interaction.commandName} was found.`, 'warn');
 			return;
 		}
 

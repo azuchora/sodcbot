@@ -1,4 +1,5 @@
 const config = require('../config');
+const { log } = require('./logger');
 
 const request = async (url) => {
     try{
@@ -24,7 +25,7 @@ module.exports = {
         const url = `https://api.battlemetrics.com/servers/${serverId}?include=player`;
         const response = await request(url);
         if (!response.ok){
-            // error log
+            log(`Failed to get server page ${serverId}`, 'warn');
             return null;
         }
         return await response.json();
@@ -33,7 +34,7 @@ module.exports = {
         if (page === null){
             page = await module.exports.getBattlemetricsServerPage(client, serverId);
             if(page === null){
-                // error log
+                log(`Failed to get server info ${serverId}`, 'warn');
                 return null;
             }
         }
