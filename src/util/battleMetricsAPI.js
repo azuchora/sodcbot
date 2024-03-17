@@ -56,7 +56,7 @@ module.exports = {
     },
     
     getBattlemetricsPlayerPage: async function (client, playerId){
-        const url = `https://api.battlemetrics.com/players/${playerId}?include=identifier`;
+        const url = `https://api.battlemetrics.com/players/${playerId}?include=identifier,server`;
         const response = await request(url);
         if (!response.ok){
             log(`Failed to get player page ${playerId}`, 'warn');
@@ -69,26 +69,32 @@ module.exports = {
         if (page === null){
             page = await module.exports.getBattlemetricsPlayerPage(client, playerId);
             if(page === null){
-                log(`Failed to get player info ${serverId}`, 'warn');
+                log(`Failed to get player info ${playerId}`, 'warn');
                 return null;
             }
         }
         let data = page['data']['attributes'];
         let previousNames = [];
+        let playTime = 0;
         try{
             if(page.length !== null){
                 for(const item of page['included']){
                     if(item.type === 'identifier'){
                         previousNames.push({
-                            name: item.attributes.name,
+                            name: item.attributes.identifier,
                             lastSeen: item.attributes.lastSeen,
                         });
+                    }
+                    else if(item.type === 'server'){
+                        playTime += item.meta.timePlayed;
                     }
                 }
                 return {
                     name: data.name,
                     createdAt: data.createdAt,
                     nameHistory: previousNames,
+                    playTime: `${Math.round(playTime/3600)}`,
+                    id: playerId,
                 }
             }
         }
@@ -97,6 +103,3 @@ module.exports = {
         return null;
     }
 }
-
-
-// (async()=>{console.log(await module.exports.getBattlemetricsServerPage(null, '9594571'));})();
