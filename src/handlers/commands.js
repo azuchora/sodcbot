@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const ExtendedClient = require('../structures/ExtendedClient');
-const { log } = require('../util/logger');
+const { log } = require('../tools/logger');
 
 /**
  * 

@@ -1,7 +1,7 @@
 const { REST, Routes } = require('discord.js');
 const config = require('../config.js');
 const ExtendedClient = require('../structures/ExtendedClient.js');
-const { log } = require('../util/logger.js');
+const { log } = require('../tools/logger.js');
 
 /**
  * 

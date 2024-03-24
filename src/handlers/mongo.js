@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const config = require('../config');
-const { log } = require('../util/logger');
+const { log } = require('../tools/logger');
 
 module.exports = async () => {
     try{
