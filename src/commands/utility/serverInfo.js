@@ -1,16 +1,16 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
-const { getBattlemetricsPlayerInfo } = require('../../tools/battleMetricsAPI');
-const { getPlayerEmbed } = require('../../components/discordEmbeds');
+const { getBattlemetricsServerInfo } = require('../../tools/battleMetricsAPI');
+const { getServerEmbed } = require('../../components/discordEmbeds');
 const { Interaction } = require('discord.js');
 const ExtendedClient = require('../../structures/ExtendedClient');
 
 module.exports = {
     data: new SlashCommandBuilder()
-    .setName('playerinfo')
-    .setDescription('Basic player info')
+    .setName('serverinfo')
+    .setDescription('Basic server info')
     .addStringOption(option =>
         option
-        .setName('playerid')
+        .setName('serverid')
         .setDescription('BattlemetricsId')
         .setRequired(true)
         )
@@ -24,16 +24,16 @@ module.exports = {
     async execute(client, interaction){
         await interaction.deferReply();
         
-        const playerId = interaction.options.getString('playerid');
+        const serverId = interaction.options.getString('serverid');
         
-        const playerInfo = await getBattlemetricsPlayerInfo(client, playerId);
+        const serverInfo = await getBattlemetricsServerInfo(client, serverId);
 
-        if (playerInfo == null){
-            await interaction.followUp({ content: 'Couldnt find player.', ephemeral: true });
+        if (serverInfo == null){
+            await interaction.followUp({ content: 'Couldnt find server.', ephemeral: true });
             return;
         }
 
-        const embed = getPlayerEmbed(playerInfo);
+        const embed = getServerEmbed(serverInfo);
         
         await interaction.followUp({ embeds: [embed] });
     }

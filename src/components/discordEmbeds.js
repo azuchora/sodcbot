@@ -50,5 +50,24 @@ module.exports = {
                 {name: 'Last seen', value: lastSeen, inline: true},
             ]
         });
-    }
+    },
+    getServerEmbed: function(serverInfo){
+        const firstSeen = new Date(serverInfo.createdAt);
+        const lastSeen = new Date(serverInfo.updatedAt);
+        return module.exports.getEmbed({
+            color: 0x1198F1,
+            timestamp: true,
+            fields: [
+                {name: 'Name', value: serverInfo.name},
+                {name: 'Address', value: serverInfo.address, inline: true},
+                {name: 'Status', value: (serverInfo.status) ? ':green_circle:' : ':red_circle:', inline: true},
+                {name: 'Ip', value: `${serverInfo.ip}:${serverInfo.port}`},
+                {name: 'Pop', value: `${serverInfo.players}/${serverInfo.maxPlayers}`, inline: true},
+                {name: 'Rank', value: `${serverInfo.rank}`, inline: true},
+                {name: 'Country', value: serverInfo.country, inline: true},
+                {name: 'First seen', value: `<t:${Math.round(firstSeen.getTime()/1000)}:f>`, inline:true},
+                {name: 'Last seen', value: `<t:${Math.round(lastSeen.getTime()/1000)}:f>`, inline:true}
+            ]
+        });
+    },
 }

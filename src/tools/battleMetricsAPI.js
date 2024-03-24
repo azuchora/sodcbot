@@ -1,5 +1,6 @@
 const config = require('../config');
 const { log } = require('./logger');
+const ExtendedClient = require('../structures/ExtendedClient');
 
 const request = async (url) => {
     try{
@@ -30,7 +31,16 @@ module.exports = {
         }
         return await response.json();
     },
-    getBattlemetricsServerInfo: async function (client, serverId, page = null){
+    /**
+     * 
+     * @param {ExtendedClient} client 
+     */ 
+    getBattlemetricsServerInfo: async function (client, serverId, force = null, page = null){
+        const serverInfo = client.collection.trackedServers.get(serverId);
+        console.log(serverInfo.data);
+        if (serverInfo?.data !== null && force !== true && serverInfo?.data !== undefined){
+            return serverInfo.data;
+        }
         if (page === null){
             page = await module.exports.getBattlemetricsServerPage(client, serverId);
             if(page === null){
@@ -42,11 +52,17 @@ module.exports = {
         try{
             if(page.length !== null){
                 return {
+                    name: data.name,
+                    address: data.address,
                     ip: data.ip,
                     port: data.port,
+                    players: data.players,
+                    maxPlayers: data.maxPlayers,
                     rank: data.rank,
                     country: data.country,
                     status: (data.status === 'online') ? true : false,
+                    createdAt: data.createdAt,
+                    updatedAt: data.updatedAt,
                 }
             }
         }
