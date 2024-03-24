@@ -4,12 +4,16 @@ const commands = require("../handlers/commands");
 const events = require("../handlers/events");
 const deploy = require("../handlers/deploy");
 const mongo = require('../handlers/mongo');
+const components = require('../handlers/components');
 
 module.exports = class extends Client {
     collection = {
         interactionCommands: new Collection(),
         components: {
-
+            buttons: new Collection(),
+            modals: new Collection(),
+            autocomplete: new Collection(),
+            selects: new Collection(),
         },
         trackedServers: new Collection(),
     };
@@ -25,6 +29,7 @@ module.exports = class extends Client {
     start = async () => {
         commands(this);
         events(this);
+        components(this);
         mongo();
         await this.login(config.DISCORD_TOKEN);
         deploy(this);
