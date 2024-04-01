@@ -1,11 +1,10 @@
 const { model, Schema } = require('mongoose');
-const { PlayerSchema } = require('./playerSchema');
+const PlayerSchema = require('./playerSchema');
 
-module.exports = model('TrackerSchema', 
-    new Schema({
-        trackerId: {
-            type: Number,
-            required: true,
+module.exports = new Schema({
+        name: {
+            type: String,
+            default: 'Player tracker',
         },
         active: {
             type: Boolean,
@@ -23,11 +22,10 @@ module.exports = model('TrackerSchema',
             type: Boolean,
             required: true,
         },
-        players: {
-            type: [PlayerSchema],
+        serverId: {
+            type: String,
         },
-        nameChangeHistory: {
-            type: [String],
-        }
-    })
+        players: [PlayerSchema],
+        nameChangeHistory: [String],
+    }
 );

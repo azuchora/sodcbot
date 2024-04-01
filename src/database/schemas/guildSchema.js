@@ -1,5 +1,5 @@
 const { model, Schema } = require('mongoose');
-const { TrackerSchema } = require('./trackerSchema');
+const TrackerSchema = require('./trackerSchema');
 
 module.exports = model('GuildSchema', 
     new Schema({
@@ -13,9 +13,7 @@ module.exports = model('GuildSchema',
             type: String,
             default: null,
         },
-        trackers: {
-            type: [TrackerSchema],
-        },
+        trackers: [TrackerSchema],
         firstTime: {
             type: Boolean,
             default: true,

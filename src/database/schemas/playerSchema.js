@@ -1,10 +1,9 @@
 const {model, Schema} = require('mongoose');
 
-module.exports = model('PlayerSchema', 
-    new Schema({
+module.exports = new Schema({
         bmid: {
             type: String,
-            required: true,
+            default: null,
         },
         steamid: {
             type: String,
@@ -14,5 +13,17 @@ module.exports = model('PlayerSchema',
             type: String,
             default: null,
         },
-    })
+        prevName: {
+            type: String,
+            default: null,
+        },
+        status: {
+            type: Boolean,
+            default: null,
+        },
+        playTime: {
+            type: String,
+            default: null,
+        },
+    }
 );
