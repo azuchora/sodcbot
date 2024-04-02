@@ -51,23 +51,60 @@ module.exports = {
             ]
         });
     },
-    getServerEmbed: function(serverInfo){
-        const firstSeen = new Date(serverInfo.createdAt);
-        const lastSeen = new Date(serverInfo.updatedAt);
+    getServerEmbed: function(server){
+        const firstSeen = new Date(server.createdAt);
+        const lastSeen = new Date(server.updatedAt);
         return module.exports.getEmbed({
             color: 0x1198F1,
             timestamp: true,
             fields: [
-                {name: 'Name', value: serverInfo.name},
-                {name: 'Address', value: serverInfo.address, inline: true},
-                {name: 'Status', value: (serverInfo.status) ? ':green_circle:' : ':red_circle:', inline: true},
-                {name: 'Ip', value: `${serverInfo.ip}:${serverInfo.port}`},
-                {name: 'Pop', value: `${serverInfo.players}/${serverInfo.maxPlayers}`, inline: true},
-                {name: 'Rank', value: `${serverInfo.rank}`, inline: true},
-                {name: 'Country', value: serverInfo.country, inline: true},
+                {name: 'Name', value: server.name},
+                {name: 'Address', value: server.address, inline: true},
+                {name: 'Status', value: (server.status) ? ':green_circle:' : ':red_circle:', inline: true},
+                {name: 'Ip', value: `${server.ip}:${server.port}`},
+                {name: 'Pop', value: `${server.onlinePlayers}/${server.maxPlayers}`, inline: true},
+                {name: 'Rank', value: `${server.rank}`, inline: true},
+                {name: 'Country', value: server.country, inline: true},
                 {name: 'First seen', value: `<t:${Math.round(firstSeen.getTime()/1000)}:f>`, inline:true},
                 {name: 'Last seen', value: `<t:${Math.round(lastSeen.getTime()/1000)}:f>`, inline:true}
             ]
         });
     },
+    getTrackerEmbed: function(tracker, server){
+        const steamUrl = 'https://steamcommunity.com/profiles/';
+        const bmUrl = 'https://www.battlemetrics.com/players/';
+        playerNames = '', playerIds = '', playerStatus = '';
+        for(const player of tracker.players){
+            playerNames += `${player.name}\n`;
+            if(tracker.players.length < 12){
+                if(player.bmid) playerIds += `[BM](${bmUrl}${player.bmid}) `;
+                if(player.steamid) playerIds += (player.bmid) ? `| [STEAM](${steamUrl}${player.steamid})` : `[STEAM](${steamUrl}${player.steamid})`;
+                playerIds += '\n';                  
+            }
+            else {
+                if(player.steamid) playerIds += `${player.steamid}`;
+                else if(player.bmid) playerIds += `${player.bmid}\n`;
+            }
+            playerStatus += `${player.status === true ? `:green_circle: [${player.playTime}]\n` : ':red_circle:\n'}`;
+        }
+
+        if(playerNames === '') playerNames = '-';
+        if(playerIds === '') playerIds = '-';
+        if(playerStatus === '') playerStatus = '-';
+        return module.exports.getEmbed({
+            title: (tracker.name) === undefined ? 'Tracker' : tracker.name,
+            description:
+            `**Server: **\`${(server?.name) ? server.name : '-'}\`\n` +
+            `**ServerID:** \`${tracker.serverId}\`\n` +
+            `**Server status:** ${server?.status ? ':green_circle:' : ':red_circle:'}\n` +
+            `**Online:** \`${(tracker.players.filter((p)=>p.status)).length} / ${tracker.players.length}\``,
+            color: 0x1198F1,
+            timestamp: true,
+            fields: [
+                {name: 'Name', value: playerNames, inline: true},
+                {name: 'ID', value: playerIds, inline: true},
+                {name: 'Status', value: playerStatus, inline: true},
+            ],
+        });
+    }
 }
