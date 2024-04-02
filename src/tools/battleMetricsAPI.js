@@ -23,7 +23,7 @@ const request = async (url) => {
 
 module.exports = {
     getBattlemetricsServerPage: async function (client, serverId){
-        const url = `https://api.battlemetrics.com/servers/${serverId}?include=player`;
+        const url = `https://api.battlemetrics.com/servers/${serverId}?include=player,session`;
         const response = await request(url);
         if (!response.ok){
             log(`Failed to get server page ${serverId}`, 'warn');
@@ -37,7 +37,7 @@ module.exports = {
      */ 
     getBattlemetricsServerInfo: async function (client, serverId, force = null, page = null){
         const serverInfo = client.collection.trackedServers.get(serverId);
-        console.log(serverInfo.data);
+        
         if (serverInfo?.data !== null && force !== true && serverInfo?.data !== undefined){
             return serverInfo.data;
         }
@@ -51,18 +51,38 @@ module.exports = {
         let data = page['data']['attributes'];
         try{
             if(page.length !== null){
+                const players = (page.included !== null) ? page.included.reduce((acc, current) => {
+                    if(current.type === 'player'){
+                        const playerId = current.id;
+                        const session = page.included.find((i) => i.type === 'session' && i.relationships.player.data.id === playerId);
+                        if(session){
+                            const duration = Date.now() - new Date(session.attributes.start);
+                            const hours = Math.floor(duration / (1000 * 60 * 60));
+                            const minutes = Math.floor((duration % (1000 * 60 * 60)) / (1000 * 60));
+                            const playTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+                            acc.push({ ...current, session: {
+                                start: session.attributes.start,
+                                stop: session.attributes.stop,
+                                firstTime: session.attributes.firstTime,
+                                duration: playTime,
+                            }});
+                        }
+                    }
+                    return acc;
+                }, []) : null;
                 return {
                     name: data.name,
                     address: data.address,
                     ip: data.ip,
                     port: data.port,
-                    players: data.players,
+                    onlinePlayers: data.players,
                     maxPlayers: data.maxPlayers,
                     rank: data.rank,
                     country: data.country,
                     status: (data.status === 'online') ? true : false,
                     createdAt: data.createdAt,
                     updatedAt: data.updatedAt,
+                    players: players,
                 }
             }
         }
