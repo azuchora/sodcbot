@@ -27,5 +27,60 @@ module.exports = {
         });
 
         return new ActionRowBuilder().addComponents(testButton);
-    }
+    },
+    getTrackerButtons: function(tracker){
+        const activeButton = module.exports.getButton({
+            customId: 'trackerActiveButton',
+            style: (tracker.active) ? SUCCESS : DANGER,
+            label: 'ACTIVE',
+        });
+
+        const addPlayerBmButton = module.exports.getButton({
+            customId: 'trackerAddPlayerBmButton',
+            style: SUCCESS,
+            label: 'ADD PLAYER (B)',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+        const addPlayerSteamButton = module.exports.getButton({
+            customId: 'trackerAddPlayerSteamButton',
+            style: SUCCESS,
+            label: 'ADD PLAYER (S)',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+        const addPlayerButton = module.exports.getButton({
+            customId: 'trackerAddPlayerButton',
+            style: SUCCESS,
+            label: 'ADD PLAYER',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+        const refreshTrackerButton = module.exports.getButton({
+            customId: 'trackerRefreshButton',
+            style: SECONDARY,
+            emoji: '♻',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+        const firstRow = new ActionRowBuilder().addComponents(activeButton, addPlayerButton, addPlayerBmButton, addPlayerSteamButton, refreshTrackerButton);
+
+        const removePlayerButton = module.exports.getButton({
+            customId: 'trackerRemovePlayerButton',
+            style: DANGER,
+            label: 'REMOVE PLAYER',
+            disabled: (tracker.active) ? ((tracker.players.length == 0) ? true : false) : true ,
+        });
+
+        const editTrackerButton = module.exports.getButton({
+            customId: 'trackerEditButton',
+            style: PRIMARY,
+            label: 'EDIT',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+        const secondRow = new ActionRowBuilder().addComponents(removePlayerButton, editTrackerButton);
+        
+        return [firstRow, secondRow]; 
+    },
 };
