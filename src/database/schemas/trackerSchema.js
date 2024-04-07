@@ -24,6 +24,7 @@ module.exports = new Schema({
         },
         serverId: {
             type: String,
+            default: null,
         },
         players: [PlayerSchema],
         nameChangeHistory: [String],

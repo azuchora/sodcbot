@@ -145,6 +145,7 @@ module.exports = class extends Client {
     };
 
     updateServer = async (serverId) => {
+        if(!serverId) return;
         const info = this.collection.trackedServers.get(serverId);
         const page = await getBattlemetricsServerInfo(this, serverId, true);
         info.data = page;
