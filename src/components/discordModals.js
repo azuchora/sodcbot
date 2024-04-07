@@ -111,7 +111,7 @@ module.exports = {
         const serverInput = module.exports.getTextInput({
             customId: 'serverId',
             label: 'Serverid',
-            value: `${tracker.serverId}`,
+            value: `${(tracker.serverId !== null) ? tracker.serverId : ''}`,
             style: SHORT,
             required: false,
         });
