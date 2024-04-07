@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const ExtendedClient = require('../structures/ExtendedClient');
-
+const { log } = require('../tools/logger');
 /**
  * 
  * @param {ExtendedClient} client 
@@ -14,11 +14,14 @@ module.exports = (client) => {
     for(const file of eventFiles){
         const filePath = path.join(eventsPath, file);
         const event = require(filePath);
-        
-        if (event.once){
-            client.once(event.name, (...args) => event.execute(client, ...args));
-        } else {
-            client.on(event.name, (...args) => event.execute(client, ...args));
+        try{
+            if (event.once){
+                client.once(event.name, (...args) => event.execute(client, ...args));
+            } else {
+                client.on(event.name, (...args) => event.execute(client, ...args));
+            }
+        } catch(e){
+            log(`Failed to execute event ${event.name}`, 'err');
         }
     }
 }
