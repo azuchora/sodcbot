@@ -95,7 +95,7 @@ module.exports = {
             title: (tracker.name) === undefined ? 'Tracker' : tracker.name,
             description:
             `**Server: **\`${(server?.name) ? server.name : '-'}\`\n` +
-            `**ServerID:** \`${tracker.serverId}\`\n` +
+            `**ServerID:** \`${(tracker.serverId !== null) ? tracker.serverId : '-'}\`\n` +
             `**Server status:** ${server?.status ? ':green_circle:' : ':red_circle:'}\n` +
             `**Online:** \`${(tracker.players.filter((p)=>p.status)).length} / ${tracker.players.length}\``,
             color: 0x1198F1,

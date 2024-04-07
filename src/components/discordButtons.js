@@ -79,7 +79,13 @@ module.exports = {
             disabled: (!tracker.active) ? true : false,
         });
 
-        const secondRow = new ActionRowBuilder().addComponents(removePlayerButton, editTrackerButton);
+        const deleteTrackerButton = module.exports.getButton({
+            customId: 'trackerDeleteButton',
+            style: SECONDARY,
+            emoji: '🗑️',
+        });
+
+        const secondRow = new ActionRowBuilder().addComponents(removePlayerButton, editTrackerButton, deleteTrackerButton);
         
         return [firstRow, secondRow]; 
     },
