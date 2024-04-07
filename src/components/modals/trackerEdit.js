@@ -21,10 +21,12 @@ module.exports = {
         }
         if(tracker.serverId !== serverid){
             const server = client.collection.trackedServers.get(tracker.serverId);
-            server.count = server.count - 1;
-            client.collection.trackedServers.set(tracker.serverId, server);
             tracker.serverId = serverid;
-            await client.updateServer(serverid);
+            if(server){
+                server.count = server.count - 1;
+                client.collection.trackedServers.set(tracker.serverId, server);
+                await client.updateServer(serverid);
+            }
         }
         tracker.name = name;
 
