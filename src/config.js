@@ -7,4 +7,5 @@ module.exports = {
     DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
     BATTLEMETRICS_TOKEN: process.env.BATTLEMETRICS_TOKEN || null,
     MONGO_URL: process.env.MONGO_URL,
+    STEAM_TOKEN: process.env.STEAM_TOKEN,
 }
