@@ -3,6 +3,7 @@ const { log } = require('./logger');
 const { Guild, ChannelType } = require('discord.js');
 const { getTrackerEmbed } = require('../components/discordEmbeds');
 const { getTrackerButtons } = require('../components/discordButtons');
+const { getGuild } = require('./guilds');
 
 module.exports = {
     /**
@@ -51,13 +52,14 @@ module.exports = {
      */
     refreshTracker: async function (client, tracker, serverInfo, guild){
         try{
+            const guildInfo = await getGuild(guild.id);
             let category = await module.exports.getChannel(client, tracker.categoryId);
             if(!category && tracker.categoryId !== null){
                 category = await guild.channels.create({
                     name: tracker.categoryName,
                     type: ChannelType.GuildCategory,
                 });
-                for(const t of guild.trackers){
+                for(const t of guildInfo.trackers){
                     if(t.categoryId = tracker.categoryId) t.categorylId = category.id;
                 }
                 tracker.categoryId = category.id;
@@ -75,7 +77,7 @@ module.exports = {
                     name: tracker.channelName,
                     type: ChannelType.GuildText,
                 });
-                for(const t of guild.trackers){
+                for(const t of guildInfo.trackers){
                     if(t.channelId = tracker.channelId) t.channelId = channel.id;
                 }
                 tracker.channelId = channel.id;
