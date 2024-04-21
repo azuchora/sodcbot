@@ -10,7 +10,7 @@ module.exports = {
     /**
      * @param {ExtendedClient} client
      */
-    updateTracker: async function (client, tracker, update = false, guild = null){
+    updateTracker: async function (client, tracker, update = false, guild = null, guildInfo = null){
         if(!tracker.active) return;
         if(update) await ServerTools.updateServer(client, tracker.serverId);
         const server = await ServerTools.getServer(client, tracker.serverId);
@@ -43,7 +43,7 @@ module.exports = {
             }
         }
 
-        await DiscordTools.refreshTracker(client, tracker, serverInfo, guild);
+        await DiscordTools.refreshTracker(client, tracker, serverInfo, guild, guildInfo);
     },
     /**
      * 
@@ -53,7 +53,7 @@ module.exports = {
         for(const guild of client.guilds.cache){
             const guildInfo = await GuildTools.getGuild(guild[0]);
             for(const tracker of guildInfo.trackers){
-                await module.exports.updateTracker(client, tracker, false, guild[1]);
+                await module.exports.updateTracker(client, tracker, false, guild[1], guildInfo);
             }
             await GuildQueries.updateGuild(guildInfo);
         }

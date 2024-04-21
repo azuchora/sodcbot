@@ -4,6 +4,7 @@ const { Guild, ChannelType } = require('discord.js');
 const { getTrackerEmbed } = require('../components/discordEmbeds');
 const { getTrackerButtons } = require('../components/discordButtons');
 const { getGuild } = require('./guilds');
+const { updateGuild } = require('../database/queries/guilds');
 
 module.exports = {
     /**
@@ -50,24 +51,25 @@ module.exports = {
      * @param {ExtendedClient} client
      * @param {Guild} guild
      */
-    refreshTracker: async function (client, tracker, serverInfo, guild){
+    refreshTracker: async function (client, tracker, serverInfo, guild = null, guildInfo = null){
         try{
-            const guildInfo = await getGuild(guild.id);
             let category = await module.exports.getChannel(client, tracker.categoryId);
             if(!category && tracker.categoryId !== null){
                 category = await guild.channels.create({
                     name: tracker.categoryName,
                     type: ChannelType.GuildCategory,
                 });
-                for(const t of guildInfo.trackers){
-                    if(t.categoryId = tracker.categoryId) t.categorylId = category.id;
+                for(const t of guildInfo?.trackers){
+                    if(t.categoryId == tracker.categoryId) t.categoryId = category.id;
                 }
+                await updateGuild(guildInfo);
                 tracker.categoryId = category.id;
             }
             tracker.categoryName = category.name;
 
             let channel = await module.exports.getChannel(client, tracker.channelId);
             if(!channel){
+                const oldChannelId = tracker.channelId;
                 channel = (tracker.categoryId === null) ?
                 await guild.channels.create({
                     name: tracker.channelName,
@@ -77,9 +79,12 @@ module.exports = {
                     name: tracker.channelName,
                     type: ChannelType.GuildText,
                 });
-                for(const t of guildInfo.trackers){
-                    if(t.channelId = tracker.channelId) t.channelId = channel.id;
+                for(const t of guildInfo?.trackers){
+                    if(t.channelId === oldChannelId){
+                        t.channelId = channel.id;
+                    }
                 }
+                await updateGuild(guildInfo);
                 tracker.channelId = channel.id;
             }
             tracker.channelName = channel.name;
