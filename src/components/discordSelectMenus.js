@@ -24,7 +24,7 @@ module.exports = {
             items.push({
                 label: `${player.name}`,
                 description: desc,
-                value: `{"bmid": "${player.bmid}", "steamid": "${player.steamid}"}`,
+                value: `${player._id}`,
             });
         }
         return new ActionRowBuilder().addComponents(    

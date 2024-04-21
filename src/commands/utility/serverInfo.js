@@ -33,8 +33,6 @@ module.exports = {
             return;
         }
 
-        const embed = getServerEmbed(serverInfo);
-        
-        await interaction.followUp({ embeds: [embed] });
+        await interaction.followUp({ embeds: [getServerEmbed(serverInfo)] });
     }
 };

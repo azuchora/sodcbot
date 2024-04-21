@@ -4,6 +4,7 @@ const ExtendedClient = require('../../structures/ExtendedClient');
 const { getTrackerEmbed } = require('../../components/discordEmbeds');
 const { getTrackerButtons } = require('../../components/discordButtons');
 const { updateGuild } = require('../../database/queries/guilds');
+const GuildTools = require('../../tools/guilds');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,12 +16,15 @@ module.exports = {
      * @param {Interaction} interaction 
      */ 
     async execute(client, interaction){
-        const guild = client.collection.guilds.get(interaction.guild.id);
+        const guild = await GuildTools.getGuild(interaction.guild.id);
         const channel = interaction.channel;
 
         const tracker = {
             active: true,
             channelId: channel.id,
+            channelName: channel.name,
+            categoryId: channel.parent.id,
+            catrgoryName: channel.parent.name,
             messageId: null,
             everyone: true,
             serverId: null,
@@ -30,7 +34,7 @@ module.exports = {
         
         const message = await channel.send({embeds: [getTrackerEmbed(tracker)], components: getTrackerButtons(tracker)});
         tracker.messageId = message.id;
-        guild.data.trackers.push(tracker);
+        guild.trackers.push(tracker);
         await updateGuild(guild);
         await interaction.reply({content: 'Succesfully created new tracker', ephemeral: true});
     }
