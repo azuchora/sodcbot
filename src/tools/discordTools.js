@@ -54,16 +54,19 @@ module.exports = {
     refreshTracker: async function (client, tracker, serverInfo, guild = null, guildInfo = null){
         try{
             let category = await module.exports.getChannel(client, tracker.categoryId);
-            if(!category && tracker.categoryId !== null){
+            let wasDeleted = false;
+            if(!category && (tracker.categoryId !== null && tracker.categoryId !== undefined)){
+                const oldCategoryId = tracker.categoryId;
+                wasDeleted = true;
                 category = await guild.channels.create({
                     name: tracker.categoryName,
                     type: ChannelType.GuildCategory,
                 });
                 for(const t of guildInfo?.trackers){
-                    if(t.categoryId == tracker.categoryId) t.categoryId = category.id;
+                    if(t.categoryId == oldCategoryId){
+                        t.categoryId = category.id;
+                    }
                 }
-                await updateGuild(guildInfo);
-                tracker.categoryId = category.id;
             }
             tracker.categoryName = category.name;
 
@@ -84,8 +87,12 @@ module.exports = {
                         t.channelId = channel.id;
                     }
                 }
-                await updateGuild(guildInfo);
-                tracker.channelId = channel.id;
+            }
+            if(wasDeleted){
+                channel.setParent(category);
+            } else {
+                tracker.categoryId = channel.parent?.id;
+                tracker.categoryName = channel.parent?.name;
             }
             tracker.channelName = channel.name;
             const message = await module.exports.getMessage(client, channel, tracker.messageId);
