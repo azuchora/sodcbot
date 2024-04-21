@@ -57,6 +57,9 @@ module.exports = {
                     name: tracker.categoryName,
                     type: ChannelType.GuildCategory,
                 });
+                for(const t of guild.trackers){
+                    if(t.categoryId = tracker.categoryId) t.categorylId = category.id;
+                }
                 tracker.categoryId = category.id;
             }
             tracker.categoryName = category.name;
@@ -72,6 +75,9 @@ module.exports = {
                     name: tracker.channelName,
                     type: ChannelType.GuildText,
                 });
+                for(const t of guild.trackers){
+                    if(t.channelId = tracker.channelId) t.channelId = channel.id;
+                }
                 tracker.channelId = channel.id;
             }
             tracker.channelName = channel.name;
