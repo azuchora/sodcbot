@@ -5,9 +5,6 @@ module.exports = {
     getServerList: async function(){
         try{
             const serverList = await ServersSchema.find();
-            if(!serverList){
-                return null;
-            }
             return serverList;
         } catch (error){
             log(`Failed to retrive server list from db.`, 'warn');
@@ -36,16 +33,16 @@ module.exports = {
             return null;
         }
     },
-    updateServer: async function(serverData){
+    updateServer: async function(serverId, data){
         try {
-            const result = await ServersSchema.updateOne({serverId: serverData[0]}, serverData[1], { upsert: true });
+            const result = await ServersSchema.updateOne({serverId: serverId}, data, { upsert: true });
         } catch(e){
             log(`Failed to update server ${serverData[0]}`, 'warn');
         }
     },
     deleteServer: async function(serverId){
         try{
-            await ServersSchema.deleteOne({ serverId });
+            await ServersSchema.deleteOne({ serverId: serverId });
         } catch(e){
             log(`Failed to delete server ${serverId}`, 'warn');
         }

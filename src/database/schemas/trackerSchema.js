@@ -14,6 +14,18 @@ module.exports = new Schema({
             type: String,
             required: true,
         },
+        channelName: {
+            type: String,
+            required: true,
+        },
+        categoryId: {
+            type: String,
+            required: true,
+        },
+        categoryName: {
+            type: String,
+            required: true,
+        },
         messageId: {
             type: String,
             required: true,
