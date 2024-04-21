@@ -35,7 +35,7 @@ module.exports = {
      * 
      * @param {ExtendedClient} client 
      */ 
-    getBattlemetricsServerInfo: async function (client, serverId, ccc = null, page = null){
+    getBattlemetricsServerInfo: async function (client, serverId, force = null, page = null){
         const serverInfo = client.collection.trackedServers.get(serverId);
         
         if (serverInfo?.data !== null && force !== true && serverInfo?.data !== undefined){
