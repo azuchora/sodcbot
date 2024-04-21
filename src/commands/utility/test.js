@@ -1,8 +1,7 @@
 const { SlashCommandBuilder } = require('discord.js');
 const { Interaction } = require('discord.js');
 const ExtendedClient = require('../../structures/ExtendedClient');
-const { getEmbed } = require('../../components/discordEmbeds');
-const { getTestButton } = require('../../components/discordButtons');
+const { getGuild } = require('../../database/queries/guilds');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,11 +13,7 @@ module.exports = {
      * @param {Interaction} interaction 
      */ 
     async execute(client, interaction){
-
-        const embed = getEmbed({
-            description: 'test',
-        });
-        
-        await interaction.reply({ embeds: [embed], components: [getTestButton()]});
+        console.log(await getGuild('2137'));
+        await interaction.reply('t');
     }
 };
