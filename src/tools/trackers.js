@@ -5,32 +5,39 @@ const DiscordTools = require('../tools/discordTools');
 const GuildQueries = require('../database/queries/guilds');
 const { getBattlemetricsPlayerInfo } = require('./battleMetricsAPI');
 const { getSteamPlayerInfo } = require('./steamAPI');
+const discordTools = require('../tools/discordTools');
 
 module.exports = {
     /**
      * @param {ExtendedClient} client
      */
-    updateTracker: async function (client, tracker, update = false, guild = null, guildInfo = null){
+    updateTracker: async function (client, tracker, update = false, guild = null, guildInfo = null, firstTime = false){
         if(!tracker.active) return;
         if(update) await ServerTools.updateServer(client, tracker.serverId);
         const server = await ServerTools.getServer(client, tracker.serverId);
         const serverInfo = server?.data;
         
         for(const player of tracker.players){
+            let prevStatus = player.status;
             const playerInfo = serverInfo?.players.find((p) => p.id === player.bmid || p.attributes.name === player.name);
             if(!playerInfo){
-                const bmInfo = (player.bmid !== null) ? await getBattlemetricsPlayerInfo(client, player.bmid) : null;
                 const steamInfo = (player.steamid !== null) ? await getSteamPlayerInfo(client, player.steamid) : null;
                 
-                if(player.name !== steamInfo?.personaname && steamInfo?.name && !bmInfo?.name){
+                if(player.name !== steamInfo?.personaname && steamInfo?.name){
                     player.prevName = player.name;
                     player.name = steamInfo?.personaname;
-                }
-                else if(player.name !== bmInfo?.name && bmInfo?.name){
-                    player.prevName = player.name;
-                    player.name = bmInfo?.name;
+                    await discordTools.sendTrackerThreadMessage(client, 'playerNameChange', tracker, {
+                        player: player,
+                        serverName: serverInfo?.name,
+                    });
                 }
 
+                if(!firstTime && player.status != false){
+                    await DiscordTools.sendTrackerThreadMessage(client, 'playerLeave', tracker, {
+                        player: player,
+                        serverName: serverInfo?.name,
+                    });
+                }
                 player.playTime = null;
                 player.status = false;
             } else {
@@ -39,21 +46,38 @@ module.exports = {
                 if(playerInfo.attributes.name !== player.name){
                     player.prevName = player.name;
                     player.name = playerInfo.attributes.name;
+                    await discordTools.sendTrackerThreadMessage(client, 'playerNameChange', tracker, {
+                        player: player,
+                        serverName: serverInfo?.name,
+                    });
+                }
+                if(!firstTime && prevStatus != true){
+                    await DiscordTools.sendTrackerThreadMessage(client, 'playerJoin', tracker, {
+                        player: player,
+                        serverName: serverInfo?.name,
+                    });
                 }
             }
         }
-
+        const onlinePlayers = tracker.players.filter((p) => p.status);
+        if(onlinePlayers.length == 0 && tracker.players.length != 0 && tracker.onlineCount != 0 && !firstTime){
+            await discordTools.sendTrackerThreadMessage(client, 'allOffline', tracker, {
+                serverName: serverInfo?.name,
+                everyone: tracker.everyone,
+            });
+        }
+        tracker.onlineCount = onlinePlayers.length;
         await DiscordTools.refreshTracker(client, tracker, serverInfo, guild, guildInfo);
     },
     /**
      * 
      * @param {ExtendedClient} client 
      */
-    updateTrackers: async function (client){
+    updateTrackers: async function (client, firstTime = false){
         for(const guild of client.guilds.cache){
             const guildInfo = await GuildTools.getGuild(guild[0]);
             for(const tracker of guildInfo.trackers){
-                await module.exports.updateTracker(client, tracker, false, guild[1], guildInfo);
+                await module.exports.updateTracker(client, tracker, false, guild[1], guildInfo, firstTime);
             }
             await GuildQueries.updateGuild(guildInfo);
         }

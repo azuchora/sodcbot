@@ -1,4 +1,4 @@
-const { EmbedBuilder } = require('discord.js');
+const { EmbedBuilder, bold } = require('discord.js');
 
 module.exports = {
     getEmbed: function(options = {}){
@@ -29,7 +29,7 @@ module.exports = {
                 const bTime = new Date(b);
                 return aTime - bTime;
             });
-            recentNames = nameHistory.slice(0, 5);
+            recentNames = nameHistory.slice(1, 6);
             for(const name of recentNames){
                 nameDate = new Date(name.lastSeen);
                 previousNames += `${name.name}\n`;
@@ -46,7 +46,7 @@ module.exports = {
                 {name: 'Current name', value: `${playerInfo.name}`},
                 {name: 'First seen', value: `<t:${Math.round(firstSeen.getTime()/1000)}:f>`},
                 {name: 'Total playtime', value: `${playerInfo.playTime}h - ${playerInfo.playTime * 2.1}h`},
-                {name: 'Name history', value: previousNames, inline: true},
+                {name: 'Name', value: previousNames, inline: true},
                 {name: 'Last seen', value: lastSeen, inline: true},
             ]
         });
@@ -82,8 +82,9 @@ module.exports = {
                 playerIds += '\n';                  
             }
             else {
-                if(player.steamid) playerIds += `${player.steamid}`;
-                else if(player.bmid) playerIds += `${player.bmid}\n`;
+                if(player.bmid) playerIds += `${player.bmid}`;
+                else if(player.steamid) playerIds += `${player.steamid}`;
+                playerIds += '\n';
             }
             playerStatus += `${player.status === true ? `:green_circle: [${player.playTime}]\n` : ':red_circle:\n'}`;
         }
@@ -97,7 +98,7 @@ module.exports = {
             `**Server: **\`${(server?.name) ? server.name : '-'}\`\n` +
             `**ServerID:** \`${(tracker.serverId !== null) ? tracker.serverId : '-'}\`\n` +
             `**Server status:** ${server?.status ? ':green_circle:' : ':red_circle:'}\n` +
-            `**Online:** \`${(tracker.players.filter((p)=>p.status)).length} / ${tracker.players.length}\``,
+            `**Online:** \`${tracker.onlineCount} / ${tracker.players.length}\``,
             color: 0x1198F1,
             timestamp: true,
             fields: [
@@ -106,5 +107,105 @@ module.exports = {
                 {name: 'Status', value: playerStatus, inline: true},
             ],
         });
-    }
+    },
+    getPlayerJoinEmbed: function(player, serverName){
+        return module.exports.getEmbed({
+            title: `${player.name} just connected.`,
+            footer: { text: serverName },
+            timestamp: true,
+            color: 0x32a852,
+        });
+    },
+    getPlayerLeaveEmbed: function(player, serverName){
+        let [hours, minutes] = player.playTime.split(':');
+        if(hours[0] == '0') hours = hours[1];
+        if(minutes[0] == '0') minutes = minutes[1];
+        return module.exports.getEmbed({
+            title: `${player.name} just disconnected. (${player.playTime})`,
+            //description: `**Session duration:** ${(minutes != '00' || hours != '00') ? `${(hours != '00') ? `${hours} h` : ''}${(minutes != '00' ? ` ${minutes} m` : '')}` : ''}`,
+            footer: { text: serverName },
+            timestamp: true,
+            color: 0xa83232,
+        });
+    },
+    getPlayerNameChangeEmbed: function(player, serverName){
+        return module.exports.getEmbed({
+            title: 'Name change',
+            description: `**Old name:** \`\`\`${player.prevName}\`\`\`\n**New name:** \`\`\`${player.name}\`\`\``,
+            footer: { text: serverName },
+            timestamp: true,
+            color: 0xffa500,
+        });
+    },
+    getAllOfflineEmbed: function(serverName){
+        return module.exports.getEmbed({
+            title: 'Everyone just went offline!',
+            footer: { text: serverName },
+            timestamp: true,
+            color: 0xa83232,
+        });
+    },
+    getSleepEmbed: function(data){
+        const bedtime = 
+            bold(data.averageBedTime) + 
+            ` ±(~${data.averageBedTimeDeviationHrs}h)` +
+            ` (GMT+${data.tzOffsetHrs})`;
+
+        const wakeUpTime =
+            bold(data.averageWakeUpTime) +
+            ` ±(~${data.averageWakeUpTimeDeviationHrs}h)` +
+            ` (GMT+${data.tzOffsetHrs})`;
+
+        return module.exports.getEmbed({
+            title: `${data.name}`,
+            description: 
+            `Average bedtime: ${bedtime}
+            Average wake-up time: ${wakeUpTime}\n
+            Average sleep time: ${bold(data.averageSleepTimeHrs + " hours")}
+            Shortest sleep time: ${bold(data.minSleepTimeHrs + " hours")}`,
+            timestamp: true,
+            color: 0x000000,
+        });
+    },
+    getTrackerSleepEmbed: function(players){
+        const steamUrl = 'https://steamcommunity.com/profiles/';
+        const bmUrl = 'https://www.battlemetrics.com/players/';
+        let names = '';
+        let playerIds = '';
+        let sleepData = '';
+        const hasUndefined = (obj) => {
+            if(obj?.averageBedTime) return false;
+            if(obj?.averageWakeUpTime) return false;
+            return true; 
+        };
+        for(const player of players){
+            names += `${player.name}\n\n\n`;
+
+            if(player.bmid) playerIds += `[BM](${bmUrl}${player.bmid}) `;
+            if(player.steamid) playerIds += (player.bmid) ? `| [STEAM](${steamUrl}${player.steamid})` : `[STEAM](${steamUrl}${player.steamid})`;
+            playerIds += '\n\n\n';     
+            if(!hasUndefined(player)){
+                sleepData +=
+                'Bedtime: ' +
+                bold(player.averageBedTime) + 
+                ` ±(~${player.averageBedTimeDeviationHrs}h)` +
+                ` (GMT+${player.tzOffsetHrs})\n` +
+                'Wakeup: ' +
+                bold(player.averageWakeUpTime) +
+                ` ±(~${player.averageWakeUpTimeDeviationHrs}h)` +
+                ` (GMT+${player.tzOffsetHrs})\n\n`;
+            } else {
+                sleepData += `Not enough data\n\n\n`;
+            }
+        }
+        return module.exports.getEmbed({
+            fields: [
+                { name: 'Name', value: names, inline: true },
+                { name: 'ID', value: playerIds, inline: true },
+                { name: 'Sleep', value: sleepData, inline: true},
+            ],
+            timestamp: true,
+            color: 0xfff000,
+        });
+    },
 }
