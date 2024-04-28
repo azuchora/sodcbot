@@ -29,12 +29,6 @@ module.exports = {
         return new ActionRowBuilder().addComponents(testButton);
     },
     getTrackerButtons: function(tracker){
-        const activeButton = module.exports.getButton({
-            customId: 'trackerActiveButton',
-            style: (tracker.active) ? SUCCESS : DANGER,
-            label: 'ACTIVE',
-        });
-
         const addPlayerBmButton = module.exports.getButton({
             customId: 'trackerAddPlayerBmButton',
             style: SUCCESS,
@@ -56,6 +50,13 @@ module.exports = {
             disabled: (!tracker.active) ? true : false,
         });
 
+        const showSleepButton = module.exports.getButton({
+            customId: 'trackerSleepButton',
+            style: SECONDARY,
+            emoji: '🛌',
+            disabled: (!tracker.active) ? true : false,
+        });
+
         const refreshTrackerButton = module.exports.getButton({
             customId: 'trackerRefreshButton',
             style: SECONDARY,
@@ -63,7 +64,20 @@ module.exports = {
             disabled: (!tracker.active) ? true : false,
         });
 
-        const firstRow = new ActionRowBuilder().addComponents(activeButton, addPlayerButton, addPlayerBmButton, addPlayerSteamButton, refreshTrackerButton);
+        const firstRow = new ActionRowBuilder().addComponents(addPlayerButton, addPlayerBmButton, addPlayerSteamButton, showSleepButton, refreshTrackerButton);
+
+        const activeButton = module.exports.getButton({
+            customId: 'trackerActiveButton',
+            style: (tracker.active) ? SUCCESS : DANGER,
+            label: 'ACTIVE',
+        });
+
+        const everyoneButton = module.exports.getButton({
+            customId: 'trackerEveryoneButton',
+            style: (tracker.everyone) ? SUCCESS : DANGER,
+            label: '@everyone',
+            disabled: (!tracker.active) ? true : false,
+        });
 
         const removePlayerButton = module.exports.getButton({
             customId: 'trackerRemovePlayerButton',
@@ -85,7 +99,7 @@ module.exports = {
             emoji: '🗑️',
         });
 
-        const secondRow = new ActionRowBuilder().addComponents(removePlayerButton, editTrackerButton, deleteTrackerButton);
+        const secondRow = new ActionRowBuilder().addComponents(activeButton, everyoneButton, removePlayerButton, editTrackerButton, deleteTrackerButton);
         
         return [firstRow, secondRow]; 
     },

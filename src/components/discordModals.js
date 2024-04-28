@@ -124,4 +124,23 @@ module.exports = {
 
         return modal;
     },
+    getTrackerDeleteModal: function(){
+        const modal = module.exports.getModal({
+            customId: 'trackerDeleteModal',
+            title: 'Delete tracker',
+        });
+
+        const confirmationInput = module.exports.getTextInput({
+            customId: 'trackerConfirm',
+            label: 'Are you sure? Type "yes" to confirm.',
+            style: SHORT,
+            required: true,
+        });
+
+        modal.addComponents(
+            new ActionRowBuilder().addComponents(confirmationInput),
+        );
+        
+        return modal;
+    },
 };

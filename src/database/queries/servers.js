@@ -29,7 +29,7 @@ module.exports = {
             await newServer.save();
             return newServer;
         } catch (error) {
-            log('Failed to save server to db.', 'error');
+            log('Failed to save server to db.', 'err');
             return null;
         }
     },
@@ -37,7 +37,7 @@ module.exports = {
         try {
             const result = await ServersSchema.updateOne({serverId: serverId}, data, { upsert: true });
         } catch(e){
-            log(`Failed to update server ${serverData[0]}`, 'warn');
+            log(`Failed to update server ${serverId}`, 'warn');
         }
     },
     deleteServer: async function(serverId){

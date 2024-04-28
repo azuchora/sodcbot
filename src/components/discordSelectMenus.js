@@ -21,6 +21,7 @@ module.exports = {
             if(player.steamid && player.bmid) desc += `Steamid: ${player.steamid} Battlemetricsid: ${player.bmid}`;
             else if(player.steamid) desc += `Steamid: ${player.steamid}`;
             else desc += `Battlemetricsid: ${player.bmid}`;
+            console.log(player);
             items.push({
                 label: `${player.name}`,
                 description: desc,

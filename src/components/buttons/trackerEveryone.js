@@ -1,10 +1,12 @@
 const { ButtonInteraction } = require('discord.js');
 const ExtendedClient = require('../../structures/ExtendedClient');
+const { getTrackerButtons } = require('../discordButtons');
 const GuildTools = require('../../tools/guilds');
-const { updateTracker } = require('../../tools/trackers');
+const GuildQueries = require('../../database/queries/guilds');
 
 module.exports = {
-    customId: 'trackerRefreshButton',
+    customId: 'trackerEveryoneButton',
+    cooldown: 2,
     /**
      * 
      * @param {ExtendedClient} client 
@@ -13,7 +15,10 @@ module.exports = {
     execute: async (client, interaction) => {
         await interaction.deferUpdate();
         const guild = await GuildTools.getGuild(interaction.guild.id);
+        
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
-        await updateTracker(client, tracker, true);
+        tracker.everyone = !tracker.everyone;
+        await interaction.message.edit({embed: interaction.message.embeds, components: getTrackerButtons(tracker)});
+        await GuildQueries.updateGuild(guild);
     }
 };

@@ -24,7 +24,7 @@ module.exports = {
         }
 	
         await ServerTools.updateServers(client);
-        await TrackerTools.updateTrackers(client);
+        await TrackerTools.updateTrackers(client, true);
 		
 		setInterval(async()=>{
 			await ServerTools.updateServers(client);

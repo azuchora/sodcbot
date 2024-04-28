@@ -1,6 +1,7 @@
 const config = require('../config');
 const { log } = require('./logger');
 const ExtendedClient = require('../structures/ExtendedClient');
+const { getAnalyzedBedTimeSessions } = require('./sleep');
 
 const request = async (url) => {
     try{
@@ -138,13 +139,35 @@ module.exports = {
         
         return null;
     },
-    getPlayerSessions: async function (client, playerId, serverId){
-        const url = `https://api.battlemetrics.com/players/${playerId}/relationships/sessions`;
+    getBattlemetricsPlayerSessionsPage: async function (client, playerId){
+        const url = `https://api.battlemetrics.com/players/${playerId}/relationships/sessions?page[size]=100`;
         const response = await request(url);
         if (!response.ok){
-            log(`Failed to get player page ${playerId}`, 'warn');
+            log(`Failed to get player sessions page ${playerId}`, 'warn');
             return null;
         }
         return await response.json();
-    }
+    },
+    getBattlemetricsPlayerSessions: async function (client, playerId, page = null){
+        if (page === null){
+            page = await module.exports.getBattlemetricsPlayerSessionsPage(client, playerId);
+            if(page === null){
+                log(`Failed to get player info ${playerId}`, 'warn');
+                return null;
+            }
+        }
+        let data = page.data;
+        //.filter((s) => s.relationships.server.data.id === serverId);
+        data = data.map((s) => {
+            let dateStart = new Date(s.attributes.start);
+            let dateStop = new Date(s.attributes.stop);
+            return {
+                start: dateStart.getTime(),
+                stop: dateStop.getTime(),
+                id: s.id,
+                serverId: s.relationships.server.data.id,
+            }
+        });
+        return data;
+    },
 }

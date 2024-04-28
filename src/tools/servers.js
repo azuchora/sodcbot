@@ -82,7 +82,7 @@ module.exports = {
             await module.exports.deleteServer(client, serverId);
             return;
         }
-        client.collection.trackedServers.set(serverInfo);
+        client.collection.trackedServers.set(serverId, serverInfo);
         await ServerQueries.updateServer(serverId, serverInfo);
     },
 };

@@ -30,6 +30,11 @@ module.exports = new Schema({
             type: String,
             required: true,
         },
+        threadId: {
+            type: String,
+            required: true,
+            default: null,
+        },
         everyone: {
             type: Boolean,
             required: true,
@@ -37,6 +42,11 @@ module.exports = new Schema({
         serverId: {
             type: String,
             default: null,
+        },
+        onlineCount: {
+            type: Number,
+            default: 0,
+            required: true,
         },
         players: [PlayerSchema],
         nameChangeHistory: [String],

@@ -14,7 +14,7 @@ module.exports = {
      * @param {Interaction} interaction 
      */ 
     async execute(client, interaction){
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         await updateTrackers(client);
         await interaction.followUp({content: 'Succesfully refreshed all trackers!', ephemeral: true});
     }

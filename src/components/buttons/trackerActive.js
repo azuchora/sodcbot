@@ -13,12 +13,12 @@ module.exports = {
      * @param {ButtonInteraction} interaction 
      */
     execute: async (client, interaction) => {
+        await interaction.deferUpdate();
         const guild = await GuildTools.getGuild(interaction.guild.id);
         
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
         tracker.active = !tracker.active;
         await interaction.message.edit({embed: interaction.message.embeds, components: getTrackerButtons(tracker)});
         await GuildQueries.updateGuild(guild);
-        await interaction.deferUpdate();
     }
 };
