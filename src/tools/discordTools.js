@@ -54,7 +54,7 @@ module.exports = {
         const channel = await module.exports.getChannel(client, tracker.channelId); 
         const thread = channel.threads.cache.find(t => t.id === tracker.threadId);
         if(!thread){
-            log(`Couldn't get thread: ${threadId}`, 'warn');
+            log(`Couldn't get thread: ${tracker.threadId}`, 'warn');
             return;
         }
         switch(type){
