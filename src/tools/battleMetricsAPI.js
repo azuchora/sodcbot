@@ -1,7 +1,6 @@
 const config = require('../config');
 const { log } = require('./logger');
 const ExtendedClient = require('../structures/ExtendedClient');
-const { getAnalyzedBedTimeSessions } = require('./sleep');
 
 const request = async (url) => {
     try{
