@@ -1,7 +1,7 @@
 const { SlashCommandBuilder, PermissionFlagsBits } = require('discord.js');
 const { Interaction } = require('discord.js');
 const ExtendedClient = require('../../structures/ExtendedClient');
-const { getAnalyzedBedTimeSessions, mergeSessionsByDay } = require('../../tools/sleep');
+const { getAnalyzedBedTimeSessions, mergeSessionsByDay, getBedTimeSessions } = require('../../tools/sleep');
 const { getPlayerSessions } = require('../../tools/players');
 const { getSleepEmbed } = require('../../components/discordEmbeds');
 const { getBattlemetricsPlayerInfo } = require('../../tools/battleMetricsAPI');

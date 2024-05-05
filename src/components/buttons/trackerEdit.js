@@ -13,6 +13,10 @@ module.exports = {
     execute: async (client, interaction) => {
         const guild = await GuildTools.getGuild(interaction.guild.id);
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
+        if(!tracker){
+            await interaction.deferUpdate();
+            return;
+        }
         const modal = getTrackerEditModal(tracker);
         interaction.showModal(modal);
     }

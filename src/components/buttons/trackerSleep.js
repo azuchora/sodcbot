@@ -26,7 +26,6 @@ module.exports = {
             sessions = await getPlayerSessions(player.bmid);
             sessions = mergeSessionsByDay(sessions);
             
-            sessions = sessions.filter((s) => s.serverId == tracker.serverId);
             // console.log(sessions.map((s) => {
             //     return {
             //         start: new Date(s.start),
@@ -35,6 +34,7 @@ module.exports = {
             //         serverId: s.serverId,
             //     };
             // }));
+            sessions = sessions.filter((s) => s.serverId.includes(tracker.serverId));
             sleepInfo = await getAnalyzedBedTimeSessions(sessions);
             embedData.push({
                 name: player.name,
@@ -43,7 +43,6 @@ module.exports = {
                 ...sleepInfo,
             });
         }
-        
         const embed = getTrackerSleepEmbed(embedData);
         await interaction.followUp({ embeds: [embed], ephemeral: true });
     }

@@ -29,7 +29,7 @@ module.exports = {
                 const bTime = new Date(b);
                 return aTime - bTime;
             });
-            recentNames = nameHistory.slice(1, 6);
+            recentNames = nameHistory.slice(1, 8);
             for(const name of recentNames){
                 nameDate = new Date(name.lastSeen);
                 previousNames += `${name.name}\n`;
@@ -45,9 +45,9 @@ module.exports = {
             fields: [
                 {name: 'Current name', value: `${playerInfo.name}`},
                 {name: 'First seen', value: `<t:${Math.round(firstSeen.getTime()/1000)}:f>`},
-                {name: 'Total playtime', value: `${playerInfo.playTime}h - ${playerInfo.playTime * 2.1}h`},
-                {name: 'Name', value: previousNames, inline: true},
-                {name: 'Last seen', value: lastSeen, inline: true},
+                {name: 'Total playtime', value: `${Math.round(playerInfo.playTime)}h - ${Math.round(playerInfo.playTime * 2.1)}h`},
+                {name: 'Name', value: previousNames ? previousNames : '-', inline: true},
+                {name: 'Last seen', value: lastSeen ? lastSeen : '-', inline: true},
             ]
         });
     },
@@ -76,14 +76,14 @@ module.exports = {
         playerNames = '', playerIds = '', playerStatus = '';
         for(const player of tracker.players){
             playerNames += `${player.name}\n`;
-            if(tracker.players.length < 12){
+            if(tracker.players.length < 8){
                 if(player.bmid) playerIds += `[BM](${bmUrl}${player.bmid}) `;
                 if(player.steamid) playerIds += (player.bmid) ? `| [STEAM](${steamUrl}${player.steamid})` : `[STEAM](${steamUrl}${player.steamid})`;
                 playerIds += '\n';                  
             }
             else {
-                if(player.bmid) playerIds += `${player.bmid}`;
-                else if(player.steamid) playerIds += `${player.steamid}`;
+                if(player.bmid) playerIds += `[BM](${bmUrl}${player.bmid}) `;
+                else if(player.steamid) playerIds += `[STEAM](${steamUrl}${player.steamid})`;
                 playerIds += '\n';
             }
             playerStatus += `${player.status === true ? `:green_circle: [${player.playTime}]\n` : ':red_circle:\n'}`;
@@ -168,7 +168,6 @@ module.exports = {
         });
     },
     getTrackerSleepEmbed: function(players){
-        const steamUrl = 'https://steamcommunity.com/profiles/';
         const bmUrl = 'https://www.battlemetrics.com/players/';
         let names = '';
         let playerIds = '';
@@ -179,17 +178,16 @@ module.exports = {
             return true; 
         };
         for(const player of players){
+            if(!player?.bmid) continue;
             names += `${player.name}\n\n\n`;
 
-            if(player.bmid) playerIds += `[BM](${bmUrl}${player.bmid}) `;
-            if(player.steamid) playerIds += (player.bmid) ? `| [STEAM](${steamUrl}${player.steamid})` : `[STEAM](${steamUrl}${player.steamid})`;
-            playerIds += '\n\n\n';     
+            playerIds += `[BM](${bmUrl}${player.bmid})\n\n\n`;
             if(!hasUndefined(player)){
                 sleepData +=
                 'Bedtime: ' +
                 bold(player.averageBedTime) + 
                 ` ±(~${player.averageBedTimeDeviationHrs}h)` +
-                ` (GMT+${player.tzOffsetHrs})\n` +
+                ` (GMT+${player.tzOffsetHrs}\n` +
                 'Wakeup: ' +
                 bold(player.averageWakeUpTime) +
                 ` ±(~${player.averageWakeUpTimeDeviationHrs}h)` +
@@ -198,6 +196,7 @@ module.exports = {
                 sleepData += `Not enough data\n\n\n`;
             }
         }
+        
         return module.exports.getEmbed({
             fields: [
                 { name: 'Name', value: names, inline: true },

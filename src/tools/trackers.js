@@ -6,6 +6,7 @@ const GuildQueries = require('../database/queries/guilds');
 const { getBattlemetricsPlayerInfo } = require('./battleMetricsAPI');
 const { getSteamPlayerInfo } = require('./steamAPI');
 const discordTools = require('../tools/discordTools');
+const { log } = require('./logger');
 
 module.exports = {
     /**
@@ -23,7 +24,7 @@ module.exports = {
             if(!playerInfo){
                 const steamInfo = (player.steamid !== null) ? await getSteamPlayerInfo(client, player.steamid) : null;
                 
-                if(player.name !== steamInfo?.personaname && steamInfo?.name){
+                if(player.name !== steamInfo?.personaname && steamInfo?.personaname){
                     player.prevName = player.name;
                     player.name = steamInfo?.personaname;
                     await discordTools.sendTrackerThreadMessage(client, 'playerNameChange', tracker, {
@@ -67,6 +68,7 @@ module.exports = {
             });
         }
         tracker.onlineCount = onlinePlayers.length;
+        log(`Updated ${(tracker?._id) ? `tracker ${tracker._id}` : 'new tracker'}`, 'info');
         await DiscordTools.refreshTracker(client, tracker, serverInfo, guild, guildInfo);
     },
     /**

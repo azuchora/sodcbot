@@ -22,7 +22,7 @@ module.exports = {
      * @param {Interaction} interaction 
      */ 
     async execute(client, interaction){
-        await interaction.deferReply();
+        await interaction.deferReply({ ephemeral: true });
         
         const playerId = interaction.options.getString('playerid');
         
@@ -35,6 +35,6 @@ module.exports = {
 
         const embed = getPlayerEmbed(playerInfo);
         
-        await interaction.followUp({ embeds: [embed] });
+        await interaction.followUp({ embeds: [embed], ephemeral: true });
     }
 };

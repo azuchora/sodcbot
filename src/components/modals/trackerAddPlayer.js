@@ -6,6 +6,8 @@ const { updateTracker } = require('../../tools/trackers');
 const GuildQueries = require('../../database/queries/guilds');
 const { getBattlemetricsPlayerInfo } = require('../../tools/battleMetricsAPI');
 const { createPlayer } = require('../../tools/players');
+const { refreshTracker } = require('../../tools/discordTools');
+const { getServer } = require('../../tools/servers');
 
 module.exports = {
     customId: 'trackerAddPlayerModal',
@@ -15,7 +17,7 @@ module.exports = {
      * @param {ModalSubmitInteraction} interaction 
      */
     execute: async (client, interaction) => {
-        await interaction.deferUpdate();
+        await interaction.deferUpdate({ ephemeral: true });
         const steamId = interaction.fields.getTextInputValue('addPlayerSteam');
         const battlemetricsId = interaction.fields.getTextInputValue('addPlayerBm');
 
@@ -39,11 +41,12 @@ module.exports = {
             status: false,
             playTime: null,
         };
-
+        const server = await getServer(client, tracker.serverId);
+        const serverInfo = server?.data;
         tracker.players.push(player);
         await createPlayer(player.bmid);
-        await updateTracker(client, tracker);
+        // await updateTracker(client, tracker);
+        await refreshTracker(client, tracker, serverInfo, null, null);
         await GuildQueries.updateGuild(guild);
-        await interaction.deferUpdate();
     }
 };

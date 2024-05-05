@@ -12,7 +12,7 @@ module.exports = {
      * @param {ModalSubmitInteraction} interaction 
      */
     execute: async (client, interaction) => {
-        await interaction.deferUpdate();
+        await interaction.deferUpdate({ ephemeral: true });
         const confirmation = interaction.fields.getTextInputValue('trackerConfirm');
         if(confirmation.toLowerCase() !== 'yes'){
             return;

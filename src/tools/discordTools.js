@@ -150,7 +150,7 @@ module.exports = {
                 tracker.threadId = thread.id;
             }
             await (channel.threads.cache.find(t => t.id === tracker.threadId))?.setName(`'${tracker.name}' logs`);
-            log(`Updated tracker ${tracker._id}`, 'info');
+            log(`Refreshed ${(tracker?._id) ? `tracker ${tracker._id}` : 'new tracker'}`, 'info');
         } catch(e){
             log(`Failed to update tracker ${tracker._id}`, 'warn');
             console.log(e);
