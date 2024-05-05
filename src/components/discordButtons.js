@@ -99,8 +99,57 @@ module.exports = {
             emoji: '🗑️',
         });
 
+
         const secondRow = new ActionRowBuilder().addComponents(activeButton, everyoneButton, removePlayerButton, editTrackerButton, deleteTrackerButton);
         
         return [firstRow, secondRow]; 
+    },
+    getPlayerTrackerButtons: function(tracker){
+        const refreshTrackerButton = module.exports.getButton({
+            customId: 'trackerRefreshButton_',
+            style: SECONDARY,
+            emoji: '♻',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+        const activeButton = module.exports.getButton({
+            customId: 'trackerActiveButton_',
+            style: (tracker.active) ? SUCCESS : DANGER,
+            label: 'ACTIVE',
+        });
+
+        const editTrackerButton = module.exports.getButton({
+            customId: 'trackerEditButton_',
+            style: PRIMARY,
+            label: 'EDIT',
+            disabled: (!tracker.active) ? true : false,
+        });
+        
+        const firstButtonsRow = new ActionRowBuilder().addComponents(activeButton, editTrackerButton, refreshTrackerButton);
+
+        const everyoneButton = module.exports.getButton({
+            customId: 'trackerEveryoneButton_',
+            style: (tracker.everyone) ? SUCCESS : DANGER,
+            label: '@everyone',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+
+        const deleteTrackerButton = module.exports.getButton({
+            customId: 'trackerDeleteButton_',
+            style: SECONDARY,
+            emoji: '🗑️',
+        });
+
+        const showPlayerSleepButton = module.exports.getButton({
+            customId: 'trackerSleepButton_',
+            style: SECONDARY,
+            emoji: '🛌',
+            disabled: (!tracker.active) ? true : false,
+        });
+
+        const secondButtonsRow = new ActionRowBuilder().addComponents(everyoneButton, showPlayerSleepButton, deleteTrackerButton);
+
+        return [firstButtonsRow, secondButtonsRow]; 
     },
 };

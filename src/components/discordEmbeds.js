@@ -207,4 +207,21 @@ module.exports = {
             color: 0xfff000,
         });
     },
+    getPlayerTrackerEmbed: function(playerInfo, serverName) {
+        const embed = new EmbedBuilder();
+
+        const firstSeen = new Date(playerInfo.createdAt);
+        const currentName = playerInfo.name;
+        const nameHistory = playerInfo.nameHistory.map(nameObj => nameObj.name).join('\n');
+        const playTime = `${playerInfo.playTime}h - ${playerInfo.playTime * 2.1}h`;
+        const onlineStatus = playerInfo.status ? ":green_circle: Online" : ":red_circle: Offline";
+        const currentServer = playerInfo.server;
+
+        embed.setColor(0x1198F1)
+            .setTitle("Player Tracker")
+            .setDescription(`**Current Name:** ${currentName}\n\n**Name History:**\n${nameHistory}\n\n**Play Time:** ${playTime}\n\n**Online Status:** ${onlineStatus}\n\n**Current Server:** ${currentServer}\n`)
+            .setTimestamp();
+
+        return embed;
+    },
 }
