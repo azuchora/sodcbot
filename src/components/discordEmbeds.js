@@ -232,6 +232,7 @@ module.exports = {
                 { name: 'Last Seen', value: `${nameHistory.map(n => `<t:${Math.round((new Date(n.lastSeen)).getTime()/1000)}:f>`).join('\n')}`, inline: true },
             ],
             color: 0x1198F1,
+            timestamp: true,
         });
     },
 }
