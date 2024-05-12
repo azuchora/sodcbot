@@ -207,21 +207,31 @@ module.exports = {
             color: 0xfff000,
         });
     },
-    getPlayerTrackerEmbed: function(playerInfo, serverName) {
-        const embed = new EmbedBuilder();
+    getPlayerTrackerEmbed: function(tracker) {
+        const bmServerUrl = 'https://www.battlemetrics.com/servers/';
+        const bmPlayerUrl = 'https://www.battlemetrics.com/players/';
 
-        const firstSeen = new Date(playerInfo.createdAt);
-        const currentName = playerInfo.name;
-        const nameHistory = playerInfo.nameHistory.map(nameObj => nameObj.name).join('\n');
-        const playTime = `${playerInfo.playTime}h - ${playerInfo.playTime * 2.1}h`;
-        const onlineStatus = playerInfo.status ? ":green_circle: Online" : ":red_circle: Offline";
-        const currentServer = playerInfo.server;
+        const playerInfo = tracker.players[0];
+        const serverName = playerInfo.lastSeen.serverName;
 
-        embed.setColor(0x1198F1)
-            .setTitle("Player Tracker")
-            .setDescription(`**Current Name:** ${currentName}\n\n**Name History:**\n${nameHistory}\n\n**Play Time:** ${playTime}\n\n**Online Status:** ${onlineStatus}\n\n**Current Server:** ${currentServer}\n`)
-            .setTimestamp();
+        const nameHistory = playerInfo.nameHistory.slice(0, 9);
+        const lastOnline = new Date(playerInfo.lastSeen.time);
 
-        return embed;
+        return module.exports.getEmbed({
+            title: `${tracker.name}`,
+            fields: [
+                { name: 'Current name', value: `[${playerInfo.name}](${bmPlayerUrl}${playerInfo.bmid})`, inline: true },
+                { name: 'Status', value: `${playerInfo.status ? ":green_circle:" : ":red_circle:"}`, inline: true },
+                playerInfo.status ?
+                    { name: 'Current server', value: `[${serverName}](${bmServerUrl}${playerInfo.serverId})` }
+                :
+                { name: 'Last Seen', value: `<t:${Math.round(lastOnline.getTime()/1000)}:f>` }, 
+                { name: 'Server', value: `[${serverName}](${bmServerUrl}${playerInfo.serverId})`, inline: true },
+                { name: 'Playtime (all-time)', value: `${playerInfo.playTime}h - ${playerInfo.playTime * 1.9}h` },
+                { name: 'Name', value: `${nameHistory.map(n => n.name).join('\n')}`, inline: true },
+                { name: 'Last Seen', value: `${nameHistory.map(n => `<t:${Math.round((new Date(n.lastSeen)).getTime()/1000)}:f>`).join('\n')}`, inline: true },
+            ],
+            color: 0x1198F1,
+        });
     },
 }

@@ -14,6 +14,45 @@ module.exports = {
      */
     updateTracker: async function (client, tracker, update = false, guild = null, guildInfo = null, firstTime = false){
         if(!tracker.active) return;
+
+        if(tracker.isSingle){
+            let player = tracker.players[0];
+            let playerInfo = await getBattlemetricsPlayerInfo(client, player.bmid);
+
+            if(playerInfo.name != player.name){
+                player.prevName = player.name;
+                player.name = playerInfo.name;
+
+                await discordTools.sendTrackerThreadMessage(client, 'playerNameChange', tracker, {
+                    player: player,
+                    serverName: player.lastSeen.serverName,
+                });
+            }
+
+            if(!firstTime && player.status != false && !playerInfo.lastSeen.online){
+                await DiscordTools.sendTrackerThreadMessage(client, 'playerLeave', tracker, {
+                    player: player,
+                    serverName: player.lastSeen.serverName,
+                });
+            }
+
+            if(!firstTime && player.status == false && playerInfo.lastSeen.online){
+                await DiscordTools.sendTrackerThreadMessage(client, 'playerJoin', tracker, {
+                    player: player,
+                    serverName: player.lastSeen.serverName,
+                });
+            }
+
+            player.status = playerInfo.lastSeen.online;
+            player.lastSeen = playerInfo.lastSeen;
+            player.nameHistory = playerInfo.nameHistory;
+
+            log(`Updated ${(tracker?._id) ? `tracker ${tracker._id}` : 'new tracker'}`, 'info');
+            await DiscordTools.refreshTracker(client, tracker, null, guild, guildInfo);
+            return;
+        }
+
+
         if(update) await ServerTools.updateServer(client, tracker.serverId);
         const server = await ServerTools.getServer(client, tracker.serverId);
         const serverInfo = server?.data;

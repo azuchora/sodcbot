@@ -1,8 +1,8 @@
 const ExtendedClient = require('../structures/ExtendedClient');
 const { log } = require('./logger');
 const { Guild, ChannelType } = require('discord.js');
-const { getTrackerEmbed, getPlayerJoinEmbed, getPlayerLeaveEmbed, getPlayerNameChangeEmbed, getAllOfflineEmbed } = require('../components/discordEmbeds');
-const { getTrackerButtons } = require('../components/discordButtons');
+const { getTrackerEmbed, getPlayerJoinEmbed, getPlayerLeaveEmbed, getPlayerNameChangeEmbed, getAllOfflineEmbed, getPlayerTrackerEmbed } = require('../components/discordEmbeds');
+const { getTrackerButtons, getPlayerTrackerButtons } = require('../components/discordButtons');
 
 module.exports = {
     /**
@@ -65,7 +65,7 @@ module.exports = {
             
             case 'playerLeave':
                 if(!content?.serverName) return;
-                await thread.send({ embeds: [getPlayerLeaveEmbed(content.player, content.serverName)] })
+                await thread.send({ content: (content.everyone && tracker.isSingle) ? '@everyone' : '', embeds: [getPlayerLeaveEmbed(content.player, content.serverName)] })
                 break;
             
             case 'playerNameChange':
@@ -130,8 +130,8 @@ module.exports = {
             let thread;
             if(!message){
                 message = await channel.send({
-                    embeds: [getTrackerEmbed(tracker, serverInfo)],
-                    components: getTrackerButtons(tracker),
+                    embeds: [tracker.isSingle ? getPlayerTrackerEmbed(tracker) : getTrackerEmbed(tracker, serverInfo)],
+                    components: tracker.isSingle ? getPlayerTrackerButtons(tracker) : getTrackerButtons(tracker),
                 });
                 tracker.messageId = message.id;
                 const oldThread = channel.threads.cache.find(t => t.id === tracker.threadId);
@@ -139,17 +139,21 @@ module.exports = {
                 tracker.threadId = null;
             } else {
                 await module.exports.editMessage(message, {
-                    embeds: [getTrackerEmbed(tracker, serverInfo)],
-                    components: getTrackerButtons(tracker),
+                    embeds: [tracker.isSingle ? getPlayerTrackerEmbed(tracker) : getTrackerEmbed(tracker, serverInfo)],
+                    components: tracker.isSingle ? getPlayerTrackerButtons(tracker) : getTrackerButtons(tracker),
                 });
             }
             if(!message.hasThread){
                 thread = await message.startThread({
-                    name: `'${tracker.name}' logs`,
+                    // name: `'${tracker.name}' logs`,
+                    name: 'logs',
                 });
                 tracker.threadId = thread.id;
             }
-            await (channel.threads.cache.find(t => t.id === tracker.threadId))?.setName(`'${tracker.name}' logs`);
+
+                // thread = await (channel.threads.cache.find(t => t.id === tracker.threadId));
+                // if(thread) await thread.setName(`'${tracker.name}' logs`);
+
             log(`Refreshed ${(tracker?._id) ? `tracker ${tracker._id}` : 'new tracker'}`, 'info');
         } catch(e){
             log(`Failed to update tracker ${tracker._id}`, 'warn');

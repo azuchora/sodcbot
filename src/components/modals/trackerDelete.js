@@ -19,6 +19,10 @@ module.exports = {
         }
         const guild = await GuildTools.getGuild(interaction.guild.id);
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
+        if(!tracker){
+            await interaction.message.delete();
+            return;
+        }
 
         const index = guild.trackers.findIndex(t => t.messageId === tracker.messageId);
 

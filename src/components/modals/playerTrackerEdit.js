@@ -1,25 +1,31 @@
-const { ButtonInteraction } = require('discord.js');
+const { ModalSubmitInteraction } = require('discord.js');
 const ExtendedClient = require('../../structures/ExtendedClient');
 const GuildTools = require('../../tools/guilds');
-const { updateTracker } = require('../../tools/trackers');
 const { updateGuild } = require('../../database/queries/guilds');
+const { refreshTracker } = require('../../tools/discordTools');
 
 module.exports = {
-    customId: 'trackerRefreshButton',
+    customId: 'playerTrackerEditModal',
     /**
      * 
      * @param {ExtendedClient} client 
-     * @param {ButtonInteraction} interaction 
+     * @param {ModalSubmitInteraction} interaction 
      */
     execute: async (client, interaction) => {
         await interaction.deferUpdate();
+        const name = interaction.fields.getTextInputValue('trackerName');
+        if(name.length > 40) return;
+
         const guild = await GuildTools.getGuild(interaction.guild.id);
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
         if(!tracker){
-            await interaction.message.delete();
             return;
         }
-        await updateTracker(client, tracker, true);
+        
+        if(tracker.name === name) return;
+        
+        tracker.name = name;
+        await refreshTracker(client, tracker);
         await updateGuild(guild);
     }
 };

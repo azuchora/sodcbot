@@ -1,6 +1,6 @@
 const { ButtonInteraction } = require('discord.js');
 const ExtendedClient = require('../../structures/ExtendedClient');
-const { getTrackerEditModal } = require('../discordModals');
+const { getTrackerEditModal, getPlayerTrackerEditModal } = require('../discordModals');
 const GuildTools = require('../../tools/guilds');
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
             await interaction.deferUpdate();
             return;
         }
-        const modal = getTrackerEditModal(tracker);
+        const modal = tracker.isSingle ? getPlayerTrackerEditModal(tracker) : getTrackerEditModal(tracker);
         interaction.showModal(modal);
     }
 };

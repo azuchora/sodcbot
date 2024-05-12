@@ -143,4 +143,24 @@ module.exports = {
         
         return modal;
     },
+    getPlayerTrackerEditModal: function(tracker){
+        const modal = module.exports.getModal({
+            customId: 'playerTrackerEditModal',
+            title: 'Edit tracker',
+        });
+
+        const nameInput = module.exports.getTextInput({
+            customId: 'trackerName',
+            style: SHORT,
+            label: 'Tracker name',
+            value: tracker.name,
+            required: true,
+        });
+
+        modal.addComponents(
+            new ActionRowBuilder().addComponents(nameInput),
+        );
+
+        return modal;
+    },
 };

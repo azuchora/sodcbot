@@ -111,6 +111,7 @@ module.exports = {
         }
         let data = page['data']['attributes'];
         let previousNames = [];
+        let servers = [];
         let playTime = 0;
         try{
             if(page.length !== null){
@@ -123,14 +124,24 @@ module.exports = {
                     }
                     else if(item.type === 'server'){
                         playTime += item.meta.timePlayed;
+                        servers.push(item);
                     }
                 }
+                servers = servers.sort((a, b) => new Date(b.meta.lastSeen) - new Date(a.meta.lastSeen));
+                previousNames = previousNames.sort((a, b) => new Date(b.lastSeen) - new Date(a.lastSeen));
+                const lastServer = servers[0];
                 return {
                     name: data.name,
                     createdAt: data.createdAt,
                     nameHistory: previousNames,
                     playTime: `${Math.round(playTime/3600)}`,
                     id: playerId,
+                    lastSeen: {
+                        online: lastServer.meta.online,
+                        time: lastServer.meta.lastSeen,
+                        serverId: lastServer.id,
+                        serverName: lastServer.attributes.name,
+                    },
                 }
             }
         }

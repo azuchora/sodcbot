@@ -25,5 +25,13 @@ module.exports = new Schema({
             type: String,
             default: null,
         },
+        nameHistory: {
+            type: [Object],
+            default: [],
+        },
+        lastSeen: {
+            type: Object,
+            default: undefined,
+        },
     }
 );

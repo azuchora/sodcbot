@@ -17,6 +17,10 @@ module.exports = {
         await interaction.deferUpdate({ ephemeral: true });
         const guild = await GuildTools.getGuild(interaction.guild.id);
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
+        if(!tracker){
+            await interaction.message.delete();
+            return;
+        }
 
         const embedData = [];
         let sleepInfo;
@@ -34,7 +38,9 @@ module.exports = {
             //         serverId: s.serverId,
             //     };
             // }));
-            sessions = sessions.filter((s) => s.serverId.includes(tracker.serverId));
+            if(!tracker.isSingle){
+                sessions = sessions.filter((s) => s.serverId.includes(tracker.serverId));
+            }
             sleepInfo = await getAnalyzedBedTimeSessions(sessions);
             embedData.push({
                 name: player.name,

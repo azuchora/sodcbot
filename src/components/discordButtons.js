@@ -106,20 +106,20 @@ module.exports = {
     },
     getPlayerTrackerButtons: function(tracker){
         const refreshTrackerButton = module.exports.getButton({
-            customId: 'trackerRefreshButton_',
+            customId: 'trackerRefreshButton',
             style: SECONDARY,
             emoji: '♻',
             disabled: (!tracker.active) ? true : false,
         });
 
         const activeButton = module.exports.getButton({
-            customId: 'trackerActiveButton_',
+            customId: 'trackerActiveButton',
             style: (tracker.active) ? SUCCESS : DANGER,
             label: 'ACTIVE',
         });
 
         const editTrackerButton = module.exports.getButton({
-            customId: 'trackerEditButton_',
+            customId: 'trackerEditButton',
             style: PRIMARY,
             label: 'EDIT',
             disabled: (!tracker.active) ? true : false,
@@ -128,7 +128,7 @@ module.exports = {
         const firstButtonsRow = new ActionRowBuilder().addComponents(activeButton, editTrackerButton, refreshTrackerButton);
 
         const everyoneButton = module.exports.getButton({
-            customId: 'trackerEveryoneButton_',
+            customId: 'trackerEveryoneButton',
             style: (tracker.everyone) ? SUCCESS : DANGER,
             label: '@everyone',
             disabled: (!tracker.active) ? true : false,
@@ -136,13 +136,13 @@ module.exports = {
 
 
         const deleteTrackerButton = module.exports.getButton({
-            customId: 'trackerDeleteButton_',
+            customId: 'trackerDeleteButton',
             style: SECONDARY,
             emoji: '🗑️',
         });
 
         const showPlayerSleepButton = module.exports.getButton({
-            customId: 'trackerSleepButton_',
+            customId: 'trackerSleepButton',
             style: SECONDARY,
             emoji: '🛌',
             disabled: (!tracker.active) ? true : false,

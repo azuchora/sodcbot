@@ -6,6 +6,7 @@ const { getTrackerButtons } = require('../../components/discordButtons');
 const { updateGuild } = require('../../database/queries/guilds');
 const GuildTools = require('../../tools/guilds');
 const { refreshTracker } = require('../../tools/discordTools');
+const { updateTracker } = require('../../tools/trackers');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -39,9 +40,9 @@ module.exports = {
         
         const message = await channel.send({embeds: [getTrackerEmbed(tracker)], components: getTrackerButtons(tracker)});
         tracker.messageId = message.id;
+        await interaction.reply({content: 'Succesfully created new tracker', ephemeral: true});
+        await updateTracker(client, tracker, false, guild, guildInfo);
         guildInfo.trackers.push(tracker);
         await updateGuild(guildInfo);
-        await interaction.reply({content: 'Succesfully created new tracker', ephemeral: true});
-        await refreshTracker(client, tracker, null, guild, guildInfo);
     }
 };

@@ -2,6 +2,10 @@ const { model, Schema } = require('mongoose');
 const PlayerSchema = require('./playerSchema');
 
 module.exports = new Schema({
+        isSingle: {
+            type: Boolean,
+            default: false,
+        },
         name: {
             type: String,
             default: 'Player tracker',

@@ -3,9 +3,10 @@ const { Interaction } = require('discord.js');
 const ExtendedClient = require('../../structures/ExtendedClient');
 const { getPlayerTrackerEmbed } = require('../../components/discordEmbeds');
 const { getPlayerTrackerButtons } = require('../../components/discordButtons');
-const { updatePlayer } = require('../../database/queries/players');
-const GuildTools = require('../../tools/guilds');
 const { getBattlemetricsPlayerInfo } = require('../../tools/battleMetricsAPI');
+const { updateGuild } = require('../../database/queries/guilds');
+const { updateTracker } = require('../../tools/trackers');
+const { getGuild } = require('../../tools/guilds');
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -16,47 +17,58 @@ module.exports = {
                 .setName('playerid')
                 .setDescription('BattlemetricsID')
                 .setRequired(true))
-        .setDefaultPermission(false)
         .setDefaultMemberPermissions(PermissionFlagsBits.ADMINISTRATOR),
-    async execute(client, interaction) {
+    /**
+     * 
+     * @param {ExtendedClient} client 
+     * @param {Interaction} interaction 
+     */ 
+    async execute(client, interaction){
+        await interaction.deferReply({ ephemeral: true });
         const playerId = interaction.options.getString('playerid');
-        const guild = await client.guilds.fetch(interaction.guild.id);
-        const channel = interaction.channel;
-
+        
         const playerData = await getBattlemetricsPlayerInfo(client, playerId);
-
-        if (!playerData) {
-            await interaction.reply({ content: 'Failed to find player.', ephemeral: true });
+        
+        if(!playerData){
+            await interaction.followUp({ content: 'Failed to find player.', ephemeral: true });
             return;
         }
 
-        const newChannel = await guild.channels.create({
-            name: playerId,
-            type: ChannelType.GuildText,
-            parent: channel.parentId
-        });
+        const guild = await client.guilds.fetch(interaction.guild.id);
+        const channel = interaction.channel;
+
+        const guildInfo = await getGuild(interaction.guild.id);
 
         const tracker = {
+            isSingle: true,
             name: 'Player tracker',
             active: true,
-            channelId: newChannel.id,
-            channelName: newChannel.name,
-            categoryId: newChannel.parentId,
-            categoryName: newChannel.parent?.name || 'Unknown Category',
+            channelId: newChannel?.id,
+            channelName: newChannel?.name,
+            categoryId: newChannel?.parentId,
+            categoryName: newChannel?.parent?.name,
             messageId: null,
             threadId: null,
             everyone: true,
             onlineCount: 0,
             nameChangeHistory: [],
-            players: [playerData],
+            players: [
+                {
+                    bmid: playerId,
+                    name: playerData.name,
+                    status: playerData.lastSeen.online,
+                    nameHistory: playerData.nameHistory,
+                    playTime: playerData.playTime,
+                    lastSeen: playerData.lastSeen,
+                }
+            ],
         };
-
-        const trackerEmbed = getPlayerTrackerEmbed(playerData, tracker.serverName);
-        const message = await newChannel.send({ embeds: [trackerEmbed], components: getPlayerTrackerButtons(tracker) });
+        const trackerEmbed = getPlayerTrackerEmbed(tracker);
+        const message = await channel.send({ embeds: [trackerEmbed], components: getPlayerTrackerButtons(tracker) });
         tracker.messageId = message.id;
-
-        await updatePlayer(tracker);
-
-        await interaction.reply({ content: 'Successfully started tracking.', ephemeral: true });
+        await interaction.followUp({ content: 'Successfully started tracking.', ephemeral: true });
+        await updateTracker(client, tracker, false, guild, guildInfo);
+        guildInfo.trackers.push(tracker);
+        await updateGuild(guildInfo);
     }
 };

@@ -23,6 +23,10 @@ module.exports = {
 
         const guild = await GuildTools.getGuild(interaction.guild.id);
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
+        if(!tracker){
+            await interaction.message.delete();
+            return;
+        }
         if(tracker.players.length >= 20) return;
 
         if(tracker.players.find((p) => p.bmid == battlemetricsId && p.steamid == steamId)) return;
