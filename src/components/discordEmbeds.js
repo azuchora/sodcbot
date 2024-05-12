@@ -214,7 +214,7 @@ module.exports = {
         const playerInfo = tracker.players[0];
         const serverName = playerInfo.lastSeen.serverName;
 
-        const nameHistory = playerInfo.nameHistory.slice(0, 9);
+        const nameHistory = playerInfo.nameHistory.slice(0, 10);
         const lastOnline = new Date(playerInfo.lastSeen.time);
 
         return module.exports.getEmbed({
