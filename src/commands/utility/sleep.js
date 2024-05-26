@@ -16,8 +16,8 @@ module.exports = {
         .setDescription('BattlemetricsId')
         .setRequired(true)
         )
-        .setDMPermission(false)
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDMPermission(false),
+        // .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
     /**
      * 
      * @param {ExtendedClient} client 
@@ -39,6 +39,15 @@ module.exports = {
             playerId,
             ...sleepInfo,
         };
+        const hasUndefined = (obj) => {
+            if(obj?.averageBedTime) return false;
+            if(obj?.averageWakeUpTime) return false;
+            return true; 
+        };
+        if(hasUndefined(sleepInfo)){
+            await interaction.followUp({ content: 'Not enough data', ephemeral: true });
+            return;
+        }
         const embed = getSleepEmbed(data);
         await interaction.followUp({ embeds: [embed], ephemeral: true });
     }

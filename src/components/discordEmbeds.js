@@ -117,11 +117,11 @@ module.exports = {
         });
     },
     getPlayerLeaveEmbed: function(player, serverName){
-        let [hours, minutes] = player.playTime.split(':');
-        if(hours[0] == '0') hours = hours[1];
-        if(minutes[0] == '0') minutes = minutes[1];
+        // let [hours, minutes] = player.playTime.split(':');
+        // if(hours[0] == '0') hours = hours[1];
+        // if(minutes[0] == '0') minutes = minutes[1];
         return module.exports.getEmbed({
-            title: `${player.name} just disconnected. (${player.playTime})`,
+            title: `${player.name} just disconnected.`,
             //description: `**Session duration:** ${(minutes != '00' || hours != '00') ? `${(hours != '00') ? `${hours} h` : ''}${(minutes != '00' ? ` ${minutes} m` : '')}` : ''}`,
             footer: { text: serverName },
             timestamp: true,
@@ -217,17 +217,19 @@ module.exports = {
         const nameHistory = playerInfo.nameHistory.slice(0, 10);
         const lastOnline = new Date(playerInfo.lastSeen.time);
 
+        const serverField = playerInfo.status ? [{ name: 'Current server', value: `[${serverName}](${bmServerUrl}${playerInfo.serverId})` }] :
+        [ 
+            { name: 'Last Seen', value: `<t:${Math.round(lastOnline.getTime()/1000)}:f>` }, 
+            { name: 'Server', value: `[${serverName}](${bmServerUrl}${playerInfo.serverId})`, inline: true }
+        ]
+
         return module.exports.getEmbed({
             title: `${tracker.name}`,
             fields: [
                 { name: 'Current name', value: `[${playerInfo.name}](${bmPlayerUrl}${playerInfo.bmid})`, inline: true },
                 { name: 'Status', value: `${playerInfo.status ? ":green_circle:" : ":red_circle:"}`, inline: true },
-                playerInfo.status ?
-                    { name: 'Current server', value: `[${serverName}](${bmServerUrl}${playerInfo.serverId})` }
-                :
-                { name: 'Last Seen', value: `<t:${Math.round(lastOnline.getTime()/1000)}:f>` }, 
-                { name: 'Server', value: `[${serverName}](${bmServerUrl}${playerInfo.serverId})`, inline: true },
-                { name: 'Playtime (all-time)', value: `${playerInfo.playTime}h - ${playerInfo.playTime * 1.9}h` },
+                ...serverField, 
+                { name: 'Playtime (all-time)', value: `${playerInfo.playTime}h - ${Math.round(playerInfo.playTime * 1.9)}h` },
                 { name: 'Name', value: `${nameHistory.map(n => n.name).join('\n')}`, inline: true },
                 { name: 'Last Seen', value: `${nameHistory.map(n => `<t:${Math.round((new Date(n.lastSeen)).getTime()/1000)}:f>`).join('\n')}`, inline: true },
             ],
