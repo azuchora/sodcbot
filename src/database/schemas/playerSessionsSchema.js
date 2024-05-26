@@ -14,6 +14,10 @@ module.exports = model('PlayerSchema',
         name: {
             type: String,
         },
+        count: {
+            type: Number,
+            default: 1,
+        },
         sessions: [sessionSchema],
     }),
 );

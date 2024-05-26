@@ -15,6 +15,10 @@ module.exports = {
      */ 
     async execute(client, interaction){
         await interaction.deferReply({ ephemeral: true });
+        if(interaction.user.id !== '365183611944828943'){
+            await interaction.followUp({ content: 'Tylko rzanklod morze to zrobic 😭😭😭😭', ephemeral: true });
+            return;
+        }
         await updateTrackers(client);
         await interaction.followUp({content: 'Succesfully refreshed all trackers!', ephemeral: true});
     }

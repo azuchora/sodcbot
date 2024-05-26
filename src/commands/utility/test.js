@@ -6,14 +6,13 @@ const { getGuild } = require('../../database/queries/guilds');
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('button')
-        .setDescription('test buttons'),
+        .setDescription('test'),
     /**
      * 
      * @param {ExtendedClient} client 
      * @param {Interaction} interaction 
      */ 
     async execute(client, interaction){
-        console.log(await getGuild('2137'));
         await interaction.reply('t');
     }
 };

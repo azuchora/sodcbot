@@ -28,17 +28,19 @@ module.exports = {
 
         if(tracker.players.find((p) => p.steamid == steamId && p.bmid == null)) return;
 
-        const playerInfo = await getSteamPlayerInfo(client, steamId);
+        const steamInfo = await getSteamPlayerInfo(client, steamId);
         
-        if(!playerInfo) return;
+        if(!steamInfo) return;
+
+        const playerInfo = serverInfo?.players.find((p) => p.attributes.name === steamInfo.personaname);
 
         const player = {
             bmid: null,
             steamid: steamId,
-            name: playerInfo.personaname,
+            name: steamInfo.personaname,
             prevName: null,
-            status: false,
-            playTime: null,
+            status: playerInfo ? true : false,
+            playTime: playerInfo?.session?.duration,
         };
         const server = await getServer(client, tracker.serverId);
         const serverInfo = server?.data;

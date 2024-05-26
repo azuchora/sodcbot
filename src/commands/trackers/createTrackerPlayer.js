@@ -16,8 +16,8 @@ module.exports = {
             option
                 .setName('playerid')
                 .setDescription('BattlemetricsID')
-                .setRequired(true))
-        .setDefaultMemberPermissions(PermissionFlagsBits.ADMINISTRATOR),
+                .setRequired(true)),
+        // .setDefaultMemberPermissions(PermissionFlagsBits.ViewChannel),
     /**
      * 
      * @param {ExtendedClient} client 

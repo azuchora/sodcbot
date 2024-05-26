@@ -24,6 +24,7 @@ module.exports = {
             }
         });
     },
+
     updatePlayerSessions: async function(player, playerId){
         const sessions = await getBattlemetricsPlayerSessions(null, playerId);
         const newSessions = sessions.filter((s) => !player.sessions.some((ps) => s.id == ps.id));
@@ -32,6 +33,7 @@ module.exports = {
         await PlayerQueries.updatePlayer(playerId, player);
         return player;
     },
+    
     createPlayer: async function(playerId){
         const player = {
             bmid: playerId,

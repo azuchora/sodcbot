@@ -14,8 +14,7 @@ module.exports = {
         .setDescription('BattlemetricsId')
         .setRequired(true)
         )
-        .setDMPermission(false)
-        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+        .setDMPermission(false),
     /**
      * 
      * @param {ExtendedClient} client 

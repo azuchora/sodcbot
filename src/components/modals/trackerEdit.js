@@ -5,6 +5,7 @@ const { updateTracker } = require('../../tools/trackers');
 const GuildQueries = require('../../database/queries/guilds');
 const ServerTools = require('../../tools/servers');
 const { getBattlemetricsServerInfo } = require('../../tools/battleMetricsAPI');
+const { refreshTracker } = require('../../tools/discordTools');
 
 module.exports = {
     customId: 'trackerEditModal',
@@ -23,8 +24,15 @@ module.exports = {
         const guild = await GuildTools.getGuild(interaction.guild.id);
         const tracker = guild.trackers.find((t) => t.messageId === interaction.message.id);
         
+        if(!tracker){
+            await interaction.message.delete();
+            return;
+        }
+
         if(tracker.name === name && tracker.serverId === serverid) return;
-        
+
+        let isServerChanged = false;
+
         if(tracker.serverId !== serverid && typeof(serverid) == 'string'){
             const newServer = await getBattlemetricsServerInfo(client, serverid);
             if(!newServer) return;
@@ -36,9 +44,16 @@ module.exports = {
             if(!client.collection.trackedServers.has(serverid)){
                 await ServerTools.updateServer(client, serverid);
             }
+            isServerChanged = true;
         }
         tracker.name = name;
-        await updateTracker(client, tracker);
+        if(isServerChanged){
+            await updateTracker(client, tracker);
+        } else {
+            const server = await ServerTools.getServer(client, tracker.serverId);
+            const serverInfo = server?.data;
+            await refreshTracker(client, tracker, serverInfo);
+        }
         await GuildQueries.updateGuild(guild);
     }
 };

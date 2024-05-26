@@ -36,21 +36,24 @@ module.exports = {
 
         const bmInfo = await getBattlemetricsPlayerInfo(client, battlemetricsId);
         if(!bmInfo) return;
-
+        
+        const server = await getServer(client, tracker.serverId);
+        const serverInfo = server?.data;
+        const playerInfo = serverInfo?.players.find((p) => p.id === battlemetricsId || p.attributes.name === bmInfo.name);
+        
         const player = {
             bmid: battlemetricsId,
             steamid: steamId,
             name: steamInfo.personaname,
             prevName: null,
-            status: false,
-            playTime: null,
+            status: playerInfo ? true : false,
+            playTime: playerInfo?.session?.duration,
         };
-        const server = await getServer(client, tracker.serverId);
-        const serverInfo = server?.data;
+
         tracker.players.push(player);
         await createPlayer(player.bmid);
-        // await updateTracker(client, tracker);
         await refreshTracker(client, tracker, serverInfo, null, null);
+        // await updateTracker(client, tracker);
         await GuildQueries.updateGuild(guild);
     }
 };

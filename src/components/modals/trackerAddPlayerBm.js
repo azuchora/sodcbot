@@ -29,19 +29,21 @@ module.exports = {
 
         if(tracker.players.find((p) => p.bmid == battlemetricsId && p.steamid == null)) return;
 
-        const playerInfo = await getBattlemetricsPlayerInfo(client, battlemetricsId);
-        if(!playerInfo) return;
+        const bmInfo = await getBattlemetricsPlayerInfo(client, battlemetricsId);
+        if(!bmInfo) return;
+
+        const server = await getServer(client, tracker.serverId);
+        const serverInfo = server?.data;
+        const playerInfo = serverInfo?.players.find((p) => p.id === battlemetricsId);
 
         const player = {
             bmid: battlemetricsId,
             steamid: null,
-            name: playerInfo.name,
+            name: bmInfo.name,
             prevName: null,
-            status: false,
-            playTime: null,
+            status: playerInfo ? true : false,
+            playTime: playerInfo?.session?.duration,
         };
-        const server = await getServer(client, tracker.serverId);
-        const serverInfo = server?.data;
         tracker.players.push(player);
         await createPlayer(player.bmid);
         // await updateTracker(client, tracker);

@@ -65,9 +65,12 @@ module.exports = {
      * @param {ExtendedClient} client 
      */
     updateServers: async function (client){
+        const serverPromises = [];
         for(const server of client.collection.trackedServers){
-            await module.exports.updateServer(client, server[0]);
+            const serverPromise = module.exports.updateServer(client, server[0]);
+            serverPromises.push(serverPromise);
         }
+        await Promise.all(serverPromises);
     },
     /**
      * 

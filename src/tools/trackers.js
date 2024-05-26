@@ -14,7 +14,6 @@ module.exports = {
      */
     updateTracker: async function (client, tracker, update = false, guild = null, guildInfo = null, firstTime = false){
         if(!tracker.active) return;
-
         if(tracker.isSingle){
             let player = tracker.players[0];
             let playerInfo = await getBattlemetricsPlayerInfo(client, player.bmid);
@@ -115,12 +114,21 @@ module.exports = {
      * @param {ExtendedClient} client 
      */
     updateTrackers: async function (client, firstTime = false){
-        for(const guild of client.guilds.cache){
+        const guildPromises = [];
+        const updateGuild = async (guild) => {
+            let trackerPromises = [];
             const guildInfo = await GuildTools.getGuild(guild[0]);
             for(const tracker of guildInfo.trackers){
-                await module.exports.updateTracker(client, tracker, false, guild[1], guildInfo, firstTime);
+                const trackerPromise = module.exports.updateTracker(client, tracker, false, guild[1], guildInfo, firstTime);
+                trackerPromises.push(trackerPromise);
             }
+            await Promise.all(trackerPromises);
             await GuildQueries.updateGuild(guildInfo);
         }
+        for(const guild of client.guilds.cache){
+            const guildPromise = updateGuild(guild);
+            guildPromises.push(guildPromise);
+        }
+        await Promise.all(guildPromises);
     },
 };
